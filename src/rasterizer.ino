@@ -48,7 +48,7 @@ bool Rasterizer::DrawLineStep(Line &line)
 				Serial.println(i);*/
 				m_steppers[i]->TicUp();
 				axis.over -= line.steps;
-				++axis.debug;
+// 				++axis.debug;
 				m_steppers[i]->TicDown();
 			}
 		}
@@ -91,18 +91,15 @@ Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS])
 
 void Rasterizer::AddLine(double pos[NUM_AXIS], double speed)
 {
-// 	line.period = (uint32_t)(periodUs / Timer::PERIOD_US);
-
 	uint32_t ipos[NUM_AXIS];
 	FOREACH_AXIS {
-		ipos[i] = pos[i] / STEP_MM;
+		ipos[i] = (uint32_t)pos[i] / STEP_MM;
 	}
 
-	const double dist = sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
-	const double time = dist / speed; // passer le temps
+	AddLine(ipos, speed / STEP_MM);
 }
 
-void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double period)
+void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double speed)
 {
 	while (BufferFull()) {
 		/*Serial.println("overflow");
@@ -111,12 +108,12 @@ void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double period)
 	}
 
 	Line &line = m_lines[m_nextLine];
-	line.period = period;
 	line.elapsed = 0;
 	line.steps = 0;
 
 	Line *lastLine = GetLastLine();
 
+	double dist2 = 0.0;
 	FOREACH_AXIS {
 		line.pos[i] = pos[i];
 
@@ -126,17 +123,31 @@ void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double period)
 		axis.dir = (axis.delta > 0) ? Stepper::UP : Stepper::DOWN;
 		axis.debug = 0;
 
+		dist2 += axis.deltaAbs * axis.deltaAbs;
+
 		// Recherche du max.
 		if (axis.deltaAbs > line.steps) {
 			line.steps = axis.deltaAbs;
 		}
 	}
 
+	// Distance en nombre de pas.
+	const double dist = sqrt(dist2);
+	const double time = dist * 1e6 / speed;
+	line.period = time / line.steps;
 	line.stepsLeft = line.steps;
 
-	/*char buf[200];
-	sprintf(buf, "Line %i steps %i", m_nextLine, line.steps);
+	/*Serial.print("dist ");
+	Serial.print(dist);
+	Serial.print(", time ");
+	Serial.print(time);
+	Serial.print(", speed ");
+	Serial.print(speed);
+
+	char buf[200];
+	sprintf(buf, "Line %i steps %i period ", m_nextLine, line.steps);
 	Serial.print(buf);
+	Serial.print(line.period);
 
 	Serial.print(" X :");
 	Serial.print(pos[0]);

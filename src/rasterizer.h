@@ -27,7 +27,7 @@ private:
 	struct Line
 	{
 		Axis axis[NUM_AXIS];
-		uint32_t pos[NUM_AXIS];
+		double pos[NUM_AXIS];
 		uint32_t steps;
 		uint32_t stepsLeft;
 		double period;
@@ -54,8 +54,8 @@ public:
 
 	void Tic();
 
-	void AddLine(double pos[NUM_AXIS], double periodUs);
-	void AddLine(uint32_t pos[NUM_AXIS], double period);
+	void AddLine(double pos[NUM_AXIS], double speed);
+	void AddLine(uint32_t pos[NUM_AXIS], double speed);
 };
 
 #define FOREACH_AXIS \
