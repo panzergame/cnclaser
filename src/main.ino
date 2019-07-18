@@ -1,27 +1,35 @@
 #include "stepper.h"
-#include "motion.h"
+#include "rasterizer.h"
+#include "timer.h"
 
 static Stepper stepper1(PORTC, PINC, DDRC, PCMSK1, PCIE1, 0, 1, 2, 3, false);
 static Stepper stepper2(PORTD, PIND, DDRD, PCMSK2, PCIE2, 2, 3, 4, 5, false);
-static AxisController axisX(&stepper1, 0, 0);
-static AxisController axisY(&stepper2, 0, 0);
 
 static Stepper *steppers[2] = {&stepper1, &stepper2};
-static StepperEngine engine(steppers, 2);
+static Rasterizer rasterizer(steppers);
+
+void tic()
+{
+	rasterizer.Tic();
+}
 
 void setup()
 {
-	engine.Init();
-// 	stepper1.MoveUntilBound(Stepper::DOWN, 1e6);
-// 	stepper2.MoveUntilBound(Stepper::DOWN, 1e6);
-	axisX.Calibrate();
-	axisY.Calibrate();
+	FOREACH_AXIS {
+		steppers[i]->Init();
+	}
+
+	Serial.begin(9600);
+	MainTimer.Init(tic);
 }
  
 void loop()
 {
-	/*stepper1.Move(1300, Stepper::UP, 1);
-	stepper2.Move(1300, Stepper::UP, 1);
-	stepper1.Move(1300, Stepper::DOWN, 1);
-	stepper2.Move(1300, Stepper::DOWN, 1);*/
+	uint32_t p0[] = {1000, 300};
+	uint32_t p1[] = {1, 1};
+
+	for (uint8_t i = 0; i < 8; ++i) {
+		rasterizer.AddLine(p0, 1e1);
+		rasterizer.AddLine(p1, 1e1);
+	}
 }
