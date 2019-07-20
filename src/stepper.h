@@ -1,5 +1,7 @@
 #pragma once
 
+#include <avr/io.h>
+
 class Stepper
 {
 public:

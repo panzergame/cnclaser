@@ -1,5 +1,7 @@
 #include "stepper.h"
 
+#include <util/delay.h>
+
 #define NOP __asm__ __volatile__ ("nop\n\t")
 
 Stepper::Stepper(volatile uint8_t &port, volatile uint8_t &pin, volatile uint8_t &ddr,
@@ -36,7 +38,7 @@ void Stepper::Calibrate()
 			TicUp();
 			NOP;
 			TicDown();
-			delay(3);
+			_delay_ms(3);
 		}
 	}
 
@@ -45,7 +47,7 @@ void Stepper::Calibrate()
 		TicUp();
 		NOP;
 		TicDown();
-		delay(3);
+		_delay_ms(3);
 	}
 }
 

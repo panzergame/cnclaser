@@ -1,31 +1,15 @@
-Rasterizer::Line *Rasterizer::GetLastLine() const
-{
-	if (BufferEmpty()) {
-		return nullptr;
-	}
+#include "rasterizer.h"
+#include "timer.h"
+#include "usart.h"
 
-	return &m_lines[(m_nextLine - 1) % MAX_LINE];
-}
-
-void Rasterizer::NextLine()
-{
-	m_curLine = (m_curLine + 1) % MAX_LINE;
-	--m_nbLine;
-}
-
-bool Rasterizer::BufferFull()
-{
-	return m_nbLine == MAX_LINE;
-}
-
-bool Rasterizer::BufferEmpty()
-{
-	return m_nbLine == 0;
-}
+#include <util/delay.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 bool Rasterizer::DrawLineStep(Line &line)
 {
-	line.elapsed += Timer::PERIOD_US;
+	line.elapsed += m_ticPeriod;
 
 	if (line.elapsed >= line.period) {
 		line.elapsed -= line.period;
@@ -38,7 +22,9 @@ bool Rasterizer::DrawLineStep(Line &line)
 
 		FOREACH_AXIS {
 			Axis &axis = line.axis[i];
-			m_steppers[i]->SetDir(axis.dir);
+			Stepper *stepper = m_steppers[i];
+
+			stepper->SetDir(axis.dir);
 
 			axis.over += axis.deltaAbs;
 			if (axis.over >= line.steps) {
@@ -46,10 +32,10 @@ bool Rasterizer::DrawLineStep(Line &line)
 				Serial.print(axis.dir);
 				Serial.print(", ");
 				Serial.println(i);*/
-				m_steppers[i]->TicUp();
+				stepper->TicUp();
 				axis.over -= line.steps;
 // 				++axis.debug;
-				m_steppers[i]->TicDown();
+				stepper->TicDown();
 			}
 		}
 
@@ -71,18 +57,16 @@ bool Rasterizer::DrawLineStep(Line &line)
 
 void Rasterizer::Tic()
 {
-	if (!BufferEmpty()) {
-		Line &line = m_lines[m_curLine];
+	if (!m_lines.Empty()) {
+		Line &line = *m_lines.Begin();
 		if (DrawLineStep(line)) {
-			NextLine();
+			m_lines.RemoveBegin();
 		}
 	}
 }
 
-Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS])
-	:m_nextLine(0),
-	m_curLine(0),
-	m_nbLine(0)
+Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], double ticPeriod)
+	:m_ticPeriod(ticPeriod)
 {
 	FOREACH_AXIS {
 		m_steppers[i] = steppers[i];
@@ -101,17 +85,17 @@ void Rasterizer::AddLine(double pos[NUM_AXIS], double speed)
 
 void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double speed)
 {
-	while (BufferFull()) {
+	while (m_lines.Full()) {
 		/*Serial.println("overflow");
 		Serial.println(m_nextLine);*/
-		delay(1000);
+		_delay_ms(1);
 	}
 
-	Line &line = m_lines[m_nextLine];
+	Line line;
 	line.elapsed = 0;
 	line.steps = 0;
 
-	Line *lastLine = GetLastLine();
+	Line *lastLine = m_lines.End();
 
 	double dist2 = 0.0;
 	FOREACH_AXIS {
@@ -121,7 +105,6 @@ void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double speed)
 		axis.delta = ((int32_t)line.pos[i]) - ((int32_t)((lastLine) ? lastLine->pos[i] : 0));
 		axis.deltaAbs = abs(axis.delta);
 		axis.dir = (axis.delta > 0) ? Stepper::UP : Stepper::DOWN;
-		axis.debug = 0;
 
 		dist2 += axis.deltaAbs * axis.deltaAbs;
 
@@ -137,32 +120,24 @@ void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double speed)
 	line.period = time / line.steps;
 	line.stepsLeft = line.steps;
 
-	/*Serial.print("dist ");
-	Serial.print(dist);
-	Serial.print(", time ");
-	Serial.print(time);
-	Serial.print(", speed ");
-	Serial.print(speed);
-
-	char buf[200];
-	sprintf(buf, "Line %i steps %i period ", m_nextLine, line.steps);
-	Serial.print(buf);
-	Serial.print(line.period);
-
-	Serial.print(" X :");
-	Serial.print(pos[0]);
-	Serial.print(", Y :");
-	Serial.println(pos[1]);*/
+	/*char buf[200];
+	sprintf(buf, "steps %li period %f last %p (%li %li)\n\r", line.steps, line.period, lastLine, line.pos[0], line.pos[1]);
+	MainUsart.Send(buf);*/
 
 	FOREACH_AXIS {
 		Axis& axis = line.axis[i];
 		axis.over = line.steps / 2;
 
-		/*sprintf(buf, "Axis %i delta %i abs %i", i, axis.delta, (int32_t)axis.deltaAbs);
-		Serial.println(buf);
-		Serial.println(axis.deltaAbs);*/
+		/*uint32_t last = (lastLine) ? lastLine->pos[i] : 0;
+		int32_t diff = ((int32_t)line.pos[i]) - ((int32_t)last);
+
+		sprintf(buf, "Axis %i delta %li abs %li diff %li last %li\n\r", i, axis.delta, (int32_t)axis.deltaAbs, diff, last);
+		MainUsart.Send(buf);*/
 	}
 
-	m_nextLine = (m_nextLine + 1) % MAX_LINE;
-	++m_nbLine;
+	m_lines.Add(line);
+
+	/*Line *newLine = m_lines.End();
+	sprintf(buf, "Added %li %li steps %li\n\r", newLine->pos[0], newLine->pos[1], newLine->steps);
+	MainUsart.Send(buf);*/
 }

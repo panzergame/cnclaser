@@ -1,5 +1,8 @@
 #include "timer.h"
 
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
 Timer MainTimer;
 
 void Timer::Init(void (*func)())
@@ -24,8 +27,6 @@ void Timer::Init(void (*func)())
 	}
 
 	TIMSK1 |= _BV(TOIE1); // enable timer compare interrupt
-
-	ICR1 = 0;
 }
 
 void Timer::Tic()
@@ -33,17 +34,12 @@ void Timer::Tic()
 	m_func();
 }
 
-volatile uint32_t cnt = 0;
-
+volatile uint16_t cnt = 0;
 ISR(TIMER1_OVF_vect)
 {
-	if (cnt * Timer::PERIOD_US >= 5e5) { // 500ms
-// 		PORTB ^= _BV(PORTB5);
+	if (cnt++ == 500) {
+		PORTB ^= _BV(PORTB5);
 		cnt = 0;
 	}
-	else {
-		++cnt;
-	}
-
 	MainTimer.Tic();
 }

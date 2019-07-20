@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stepper.h"
+#include "circular_buffer.h"
 
 class Rasterizer
 {
@@ -20,37 +21,27 @@ private:
 		uint32_t over;
 		uint32_t deltaAbs;
 		int32_t delta;
-		uint32_t debug;
 		Stepper::Dir dir;
 	};
 
 	struct Line
 	{
 		Axis axis[NUM_AXIS];
-		double pos[NUM_AXIS];
+		uint32_t pos[NUM_AXIS];
 		uint32_t steps;
 		uint32_t stepsLeft;
 		double period;
 		double elapsed;
 	};
 
-	Line m_lines[MAX_LINE];
-	volatile uint8_t m_curLine;
-	// Position de la ligne suivante.
-	volatile uint8_t m_nextLine;
-	volatile uint8_t m_nbLine;
-
+	CircularBuffer<Line, MAX_LINE> m_lines;
 	Stepper *m_steppers[NUM_AXIS];
-
-	Line *GetLastLine() const;
-	void NextLine();
-	bool BufferFull();
-	bool BufferEmpty();
+	double m_ticPeriod;
 
 	bool DrawLineStep(Line &line);
 
 public:
-	Rasterizer(Stepper *steppers[NUM_AXIS]);
+	Rasterizer(Stepper *steppers[NUM_AXIS], double ticPeriod);
 
 	void Tic();
 
