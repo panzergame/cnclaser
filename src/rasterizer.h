@@ -8,7 +8,7 @@ class Rasterizer
 public:
 	enum {
 		NUM_AXIS = 2,
-		MAX_LINE = 16
+		MAX_LINE = 2
 	};
 
 	// 37.5mm pour 4000

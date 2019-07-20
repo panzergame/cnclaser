@@ -11,22 +11,22 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 
-/*static Stepper stepper1(PORTC, PINC, DDRC, 0, 1, 2, 3, false);
+static Stepper stepper1(PORTC, PINC, DDRC, 0, 1, 2, 3, false);
 static Stepper stepper2(PORTD, PIND, DDRD, 2, 3, 4, 5, false);
 static Stepper *steppers[2] = {&stepper1, &stepper2};
 
-static Rasterizer rasterizer(steppers, Timer::PERIOD_US);*/
-// static Parser parser;
+static Rasterizer rasterizer(steppers, Timer::PERIOD_US);
+static Parser parser;
 static Usart usart;
 
 void tic()
 {
-// 	rasterizer.Tic();
+	rasterizer.Tic();
 }
 
 void receive(uint8_t data)
 {
-// 	parser.Received(data);
+	parser.Received(data);
 }
 
 void welcome()
@@ -38,22 +38,17 @@ void welcome()
 
 void setup()
 {
-// 	MainTimer.Init(tic);
+	MainTimer.Init(tic);
 	MainUsart.Init(receive);
 
-	/*FOREACH_AXIS {
+	FOREACH_AXIS {
 		Stepper *stepper = steppers[i];
 		stepper->Init();
-// 		stepper->Calibrate();
-	}*/
+		stepper->Calibrate();
+	}
 
 	welcome();
 
-	sei();
-}
-
-void loop()
-{
 	/*double p0[] = {30., 30.};
 	double p1[] = {0., 0.};
 	double speed = 10.0;
@@ -62,6 +57,28 @@ void loop()
 		rasterizer.AddLine(p0, speed);
 		rasterizer.AddLine(p1, speed);
 	}*/
+
+	sei();
+}
+
+void loop()
+{
+	double speed = 5.0;
+
+	Parser::Command cmd = parser.NextCommand();
+
+	switch (cmd.type) {
+		case Parser::Command::LINEAR_MOVE:
+		case Parser::Command::LINEAR_MOVE_FAST:
+		{
+			rasterizer.AddLine(cmd.pos, speed);
+			break;
+		}
+		default:
+		{
+			break; // TODO laser
+		}
+	}
 }
 
 int main()

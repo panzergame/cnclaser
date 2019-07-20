@@ -8,6 +8,8 @@ with open(sys.argv[1]) as raw_file:
 		line = raw_file.readline()
 		while line:
 			ser.write(str.encode(line))
-			print(ser.readline())
+			print("Sent \"{}\"".format(line.strip()))
+			ack = ser.readline()
+			print("Answer {}".format(ack))
 
 			line = raw_file.readline()

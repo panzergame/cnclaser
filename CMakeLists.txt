@@ -101,8 +101,8 @@ message(STATUS "Set CMAKE_SYSTEM_LIBRARY_PATH to ${CMAKE_SYSTEM_LIBRARY_PATH}")
 # set compiler options for build types
 ##########################################################################
 if(CMAKE_BUILD_TYPE MATCHES Release)
-   set(CMAKE_C_FLAGS_RELEASE "-Os")
-   set(CMAKE_CXX_FLAGS_RELEASE "-Os")
+   set(CMAKE_C_FLAGS_RELEASE "-O2")
+   set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 endif(CMAKE_BUILD_TYPE MATCHES Release)
 
 if(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
