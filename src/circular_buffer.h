@@ -43,6 +43,11 @@ public:
 		return (m_len == Size);
 	}
 
+	uint16_t Len() const
+	{
+		return m_len;
+	}
+
 	bool Add(const Data& data)
 	{
 		if (Full()) {

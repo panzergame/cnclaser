@@ -32,6 +32,6 @@ public:
 	void SetDir(Dir dir);
 	void TicUp();
 	void TicDown();
-// 	void Enable();
-// 	void Disable();
+	void Enable();
+	void Disable();
 };

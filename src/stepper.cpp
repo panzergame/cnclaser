@@ -25,12 +25,11 @@ void Stepper::Init()
 	m_ddr &= ~(_BV(m_buttonPin));
 	// Pull up
 	m_port |= _BV(m_buttonPin);
-	// Enable
-	m_port &= ~(_BV(m_enablePin));
 }
 
 void Stepper::Calibrate()
 {
+	Enable();
 	// Recule de 50 pas minimum si déjà en butée.
 	SetDir(UP);
 	while ((m_pin & _BV(m_buttonPin)) == 0) {
@@ -49,6 +48,7 @@ void Stepper::Calibrate()
 		TicDown();
 		_delay_ms(3);
 	}
+	Disable();
 }
 
 void Stepper::SetDir(Dir dir)
@@ -69,4 +69,14 @@ void Stepper::TicUp()
 void Stepper::TicDown()
 {
 	m_port &= ~(_BV(m_stepPin));
+}
+
+void Stepper::Enable()
+{
+	m_port &= ~(_BV(m_enablePin));
+}
+
+void Stepper::Disable()
+{
+	m_port |= _BV(m_enablePin);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "circular_buffer.h"
+
 #include <avr/io.h>
 
 class Parser
@@ -15,20 +17,30 @@ public:
 			UNKNOWN
 		} type;
 
-		double pos[2];
+		float pos[2];
 	};
 
 private:
 	enum {
-		BUFFER_SIZE = 128
+		BUFFER_SIZE = 32
 	};
 
-	char m_buffer[BUFFER_SIZE];
-	uint8_t m_bufferLen;
-	volatile bool m_bufferReady;
+	struct Buffer
+	{
+		char data[BUFFER_SIZE];
 
-	Command::Type ParseCommandType() const;
-	Command ParseCommand() const;
+		operator bool() const
+		{
+			return false;
+		}
+	};
+
+	CircularBuffer<Buffer, 2> m_buffers;
+	Buffer m_buffer;
+	uint8_t m_bufferLen;
+
+	Command::Type ParseCommandType(Buffer &buffer) const;
+	Command ParseCommand(Buffer &buffer) const;
 
 public:
 

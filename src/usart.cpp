@@ -1,6 +1,6 @@
 #include "usart.h"
 
-#define BAUD 9600
+#define BAUD 28800
 
 #include <util/setbaud.h>
 #include <avr/io.h>

@@ -4,13 +4,13 @@
 #include <util/delay.h>
 #include <stdio.h>
 
-Parser::Command::Type Parser::ParseCommandType() const
+Parser::Command::Type Parser::ParseCommandType(Buffer &buffer) const
 {
-	switch (m_buffer[0]) {
+	switch (buffer.data[0]) {
 		case 'M':
 		{
 			int type;
-			sscanf(m_buffer, "M%i", &type);
+			sscanf(buffer.data, "M%i", &type);
 			switch (type) {
 				case 1:
 				{
@@ -29,7 +29,7 @@ Parser::Command::Type Parser::ParseCommandType() const
 		case 'G':
 		{
 			int type;
-			sscanf(m_buffer, "G%i", &type);
+			sscanf(buffer.data, "G%i", &type);
 			switch (type) {
 				case 0:
 				{
@@ -52,24 +52,26 @@ Parser::Command::Type Parser::ParseCommandType() const
 	}
 }
 
-Parser::Command Parser::ParseCommand() const
+Parser::Command Parser::ParseCommand(Buffer &buffer) const
 {
 	Command cmd;
-	cmd.type = ParseCommandType();
+	cmd.type = ParseCommandType(buffer);
 
 	switch (cmd.type) {
 		case Command::LINEAR_MOVE:
 		{
-			sscanf(m_buffer, "G1 X %lf Y %lf", &cmd.pos[0], &cmd.pos[1]);
+			sscanf(buffer.data, "G1 X %f Y %f", &cmd.pos[0], &cmd.pos[1]);
 			break;
 		}
 		case Command::LINEAR_MOVE_FAST:
 		{
-			sscanf(m_buffer, "G0 X %lf Y %lf", &cmd.pos[0], &cmd.pos[1]);
+			sscanf(buffer.data, "G0 X %f Y %f", &cmd.pos[0], &cmd.pos[1]);
 			break;
 		}
 		default:
 		{
+			cmd.pos[0] = -1.0;
+			cmd.pos[1] = -1.0;
 			break;
 		}
 	}
@@ -78,20 +80,34 @@ Parser::Command Parser::ParseCommand() const
 }
 
 Parser::Parser()
-	:m_bufferLen(0),
-	m_bufferReady(false)
+	:m_bufferLen(0)
 {
 }
 
 void Parser::Received(uint8_t data)
 {
-	if (!m_bufferReady) {
-		m_buffer[m_bufferLen++] = data;
+	if (!m_buffers.Full()) {
+		m_buffer.data[m_bufferLen++] = data;
+
+		/*char buf[16];
+		sprintf(buf, "%p\n\r", &buffer);
+		MainUsart.Send(buf);*/
+
+		// Débordement…
+		if (m_bufferLen == (BUFFER_SIZE - 1)) {
+			m_bufferLen = 0;
+		}
 
 		// Ligne complète reçu.
-		if (data == '\n' || m_bufferLen == (BUFFER_SIZE - 1)) {
-			m_bufferReady = true;
-			m_buffer[m_bufferLen] = '\0';
+		if (data == '\n') {
+			m_buffer.data[m_bufferLen] = '\0';
+			m_buffers.Add(m_buffer);
+			m_bufferLen = 0;
+
+			if (!m_buffers.Full()) {
+				MainUsart.Send("\nack\n");
+// 				MainUsart.Send(m_buffer.data);
+			}
 		}
 	}
 }
@@ -101,14 +117,22 @@ Parser::Command Parser::NextCommand()
 	Command cmd;
 
 	do {
-		while (!m_bufferReady);
+		const bool full = m_buffers.Full();
 
-		m_bufferLen = 0;
-		m_bufferReady = false;
+		Buffer *buffer;
+		do {
+			buffer = m_buffers.RemoveBegin();
+		} while (!buffer);
 
-		cmd = ParseCommand();
-		MainUsart.Send("ack");
-		MainUsart.Send(m_buffer);
+		// Si le buffer était plein, valider le dernier message.
+		if (full) {
+			MainUsart.Send("\nack\n");
+		}
+
+		cmd = ParseCommand(*buffer);
+		/*char buf[200];
+		sprintf(buf, "%i %f %f\n", cmd.type, cmd.pos[0], cmd.pos[1]);
+		MainUsart.Send(buf);*/
 	} while (cmd.type == Command::UNKNOWN);
 
 	/*char buf[100];

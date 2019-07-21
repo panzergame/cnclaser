@@ -32,7 +32,7 @@ void receive(uint8_t data)
 void welcome()
 {
 	char buf[64];
-	sprintf(buf, "Begin %f\n", Timer::PERIOD_US);
+	sprintf(buf, "Begin %f\n", (double)Timer::PERIOD_US);
 	MainUsart.Send(buf);
 }
 
@@ -44,26 +44,17 @@ void setup()
 	FOREACH_AXIS {
 		Stepper *stepper = steppers[i];
 		stepper->Init();
-		stepper->Calibrate();
+// 		stepper->Calibrate();
 	}
 
-	welcome();
-
-	/*double p0[] = {30., 30.};
-	double p1[] = {0., 0.};
-	double speed = 10.0;
-
-	for (uint8_t i = 0; i < 8; ++i) {
-		rasterizer.AddLine(p0, speed);
-		rasterizer.AddLine(p1, speed);
-	}*/
-
 	sei();
+
+	welcome();
 }
 
 void loop()
 {
-	double speed = 5.0;
+	float speed = 5.0;
 
 	Parser::Command cmd = parser.NextCommand();
 
@@ -84,6 +75,16 @@ void loop()
 int main()
 {
 	setup();
+
+	/*steppers[0]->Enable();
+	steppers[0]->SetDir(Stepper::UP);
+	for (uint16_t i = 0; i < 4000; ++i) {
+		_delay_us(100);
+		steppers[0]->TicUp();
+		steppers[0]->TicDown();
+	}
+	steppers[0]->Disable();*/
+
 	while(1) {
 		loop();
 	}

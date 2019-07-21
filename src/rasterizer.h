@@ -8,45 +8,48 @@ class Rasterizer
 public:
 	enum {
 		NUM_AXIS = 2,
-		MAX_LINE = 2
+		MAX_LINE = 32
 	};
 
 	// 37.5mm pour 4000
-	static constexpr double STEP_MM = 37.5 / 4000.0;
-	static constexpr double MAX_BOUND = 39.0;
+	static constexpr float STEP_MM = 37.5 / 4000.0;
+	static constexpr float MAX_BOUND = 39.0;
 
 private:
 	struct Axis
 	{
-		uint32_t over;
-		uint32_t deltaAbs;
-		int32_t delta;
+		uint16_t over;
+		uint16_t deltaAbs;
 		Stepper::Dir dir;
 	};
 
 	struct Line
 	{
 		Axis axis[NUM_AXIS];
-		uint32_t pos[NUM_AXIS];
-		uint32_t steps;
-		uint32_t stepsLeft;
-		double period;
-		double elapsed;
+		uint16_t pos[NUM_AXIS];
+		uint16_t steps;
+		uint16_t stepsLeft;
+		float period;
+		float elapsed;
 	};
 
 	CircularBuffer<Line, MAX_LINE> m_lines;
 	Stepper *m_steppers[NUM_AXIS];
-	double m_ticPeriod;
+	float m_ticPeriod;
+	/* Position après la dernière commande.
+	 * Utile dans le cas ou les commandes sont consommé plus rapidement que envoyé.
+	 */
+	uint16_t m_pos[NUM_AXIS];
 
 	bool DrawLineStep(Line &line);
 
 public:
-	Rasterizer(Stepper *steppers[NUM_AXIS], double ticPeriod);
+	Rasterizer(Stepper *steppers[NUM_AXIS], float ticPeriod);
 
 	void Tic();
 
-	void AddLine(double pos[NUM_AXIS], double speed);
-	void AddLine(uint32_t pos[NUM_AXIS], double speed);
+	void AddLine(float pos[NUM_AXIS], float speed);
+	void AddLine(uint16_t pos[NUM_AXIS], float speed);
 };
 
 #define FOREACH_AXIS \

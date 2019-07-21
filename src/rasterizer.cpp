@@ -58,37 +58,54 @@ bool Rasterizer::DrawLineStep(Line &line)
 void Rasterizer::Tic()
 {
 	if (!m_lines.Empty()) {
+		// Dessin de la ligne actuelle.
 		Line &line = *m_lines.Begin();
 		if (DrawLineStep(line)) {
+			// Actualisation de la dernière position.
+			FOREACH_AXIS {
+				m_pos[i] = line.pos[i];
+			}
+
+			// Suppression lorsque fini.
 			m_lines.RemoveBegin();
+
+			// Si plus de commande éteindre les moteurs.
+			if (m_lines.Empty()) {
+				FOREACH_AXIS {
+					m_steppers[i]->Disable();
+				}
+			}
 		}
 	}
 }
 
-Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], double ticPeriod)
+Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], float ticPeriod)
 	:m_ticPeriod(ticPeriod)
 {
 	FOREACH_AXIS {
 		m_steppers[i] = steppers[i];
+		m_pos[i] = 0;
 	}
 }
 
-void Rasterizer::AddLine(double pos[NUM_AXIS], double speed)
+void Rasterizer::AddLine(float pos[NUM_AXIS], float speed)
 {
-	uint32_t ipos[NUM_AXIS];
+	uint16_t ipos[NUM_AXIS];
 	FOREACH_AXIS {
-		ipos[i] = (uint32_t)pos[i] / STEP_MM;
+		ipos[i] = (uint16_t)(pos[i] / STEP_MM);
 	}
 
 	AddLine(ipos, speed / STEP_MM);
 }
 
-void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double speed)
+void Rasterizer::AddLine(uint16_t pos[NUM_AXIS], float speed)
 {
-	while (m_lines.Full()) {
-		/*Serial.println("overflow");
-		Serial.println(m_nextLine);*/
-		_delay_ms(1);
+	while (m_lines.Full());
+
+	if (m_lines.Empty()) {
+		FOREACH_AXIS {
+			m_steppers[i]->Enable();
+		}
 	}
 
 	Line line;
@@ -97,16 +114,18 @@ void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double speed)
 
 	Line *lastLine = m_lines.End();
 
-	double dist2 = 0.0;
+	uint32_t dist2 = 0;
 	FOREACH_AXIS {
 		line.pos[i] = pos[i];
 
-		Axis& axis = line.axis[i];
-		axis.delta = ((int32_t)line.pos[i]) - ((int32_t)((lastLine) ? lastLine->pos[i] : 0));
-		axis.deltaAbs = abs(axis.delta);
-		axis.dir = (axis.delta > 0) ? Stepper::UP : Stepper::DOWN;
+		const int16_t delta = ((int16_t)line.pos[i]) - ((int16_t)((lastLine) ? lastLine->pos[i] : m_pos[i]));
 
-		dist2 += axis.deltaAbs * axis.deltaAbs;
+		Axis& axis = line.axis[i];
+		axis.deltaAbs = abs(delta);
+		axis.dir = (delta > 0) ? Stepper::UP : Stepper::DOWN;
+
+		// Calcule de la distance total parcouru par les moteurs.
+		dist2 += ((int32_t)axis.deltaAbs) * ((int32_t)axis.deltaAbs);
 
 		// Recherche du max.
 		if (axis.deltaAbs > line.steps) {
@@ -115,13 +134,13 @@ void Rasterizer::AddLine(uint32_t pos[NUM_AXIS], double speed)
 	}
 
 	// Distance en nombre de pas.
-	const double dist = sqrt(dist2);
-	const double time = dist * 1e6 / speed;
+	const float dist = sqrt((float)dist2);
+	const float time = dist * 1e6 / speed;
 	line.period = time / line.steps;
 	line.stepsLeft = line.steps;
 
 	/*char buf[200];
-	sprintf(buf, "steps %li period %f last %p (%li %li)\n\r", line.steps, line.period, lastLine, line.pos[0], line.pos[1]);
+	sprintf(buf, "steps %i %f (%i %i) ", line.steps, (double)(time / line.steps), line.pos[0], line.pos[1]);
 	MainUsart.Send(buf);*/
 
 	FOREACH_AXIS {
