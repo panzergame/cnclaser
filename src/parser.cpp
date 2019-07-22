@@ -39,6 +39,14 @@ Parser::Command::Type Parser::ParseCommandType(Buffer &buffer) const
 				{
 					return Command::LINEAR_MOVE;
 				}
+				case 2:
+				{
+					return Command::CW_ARC_MOVE;
+				}
+				case 3:
+				{
+					return Command::CCW_ARC_MOVE;
+				}
 				default:
 				{
 					return Command::UNKNOWN;
@@ -68,15 +76,32 @@ Parser::Command Parser::ParseCommand(Buffer &buffer) const
 			sscanf(buffer.data, "G0 X %f Y %f", &cmd.pos[0], &cmd.pos[1]);
 			break;
 		}
+		case Command::CW_ARC_MOVE:
+		{
+			sscanf(buffer.data, "G2 X %f Y %f I %f J %f", &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
+			break;
+		}
+		case Command::CCW_ARC_MOVE:
+		{
+			sscanf(buffer.data, "G3 X %f Y %f I %f J %f", &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
+			break;
+		}
 		default:
 		{
-			cmd.pos[0] = -1.0;
-			cmd.pos[1] = -1.0;
+			cmd.pos[0] = 0.0f;
+			cmd.pos[1] = 0.0f;
+			cmd.rel[0] = 0.0f;
+			cmd.rel[1] = 0.0f;
 			break;
 		}
 	}
 
 	return cmd;
+}
+
+void Parser::SendAck()
+{
+	MainUsart.Send("ak\n");
 }
 
 Parser::Parser()
@@ -89,55 +114,37 @@ void Parser::Received(uint8_t data)
 	if (!m_buffers.Full()) {
 		m_buffer.data[m_bufferLen++] = data;
 
-		/*char buf[16];
-		sprintf(buf, "%p\n\r", &buffer);
-		MainUsart.Send(buf);*/
-
-		// Débordement…
-		if (m_bufferLen == (BUFFER_SIZE - 1)) {
-			m_bufferLen = 0;
-		}
-
 		// Ligne complète reçu.
 		if (data == '\n') {
 			m_buffer.data[m_bufferLen] = '\0';
-			m_buffers.Add(m_buffer);
 			m_bufferLen = 0;
 
-			if (!m_buffers.Full()) {
-				MainUsart.Send("\nack\n");
-// 				MainUsart.Send(m_buffer.data);
+			// Aucun envoie d'un ack si le buffer va être plein avec ce nouveau buffer.
+			m_buffer.ack = (m_buffers.Len() < (m_buffers.Size - 1));
+			if (m_buffer.ack) {
+				SendAck();
 			}
+
+			m_buffers.Add(m_buffer);
 		}
 	}
 }
 
 Parser::Command Parser::NextCommand()
 {
-	Command cmd;
-
+	Buffer *buffer;
+	// Attendre jusqu'à avoir un buffer.
 	do {
-		const bool full = m_buffers.Full();
+		buffer = m_buffers.RemoveBegin();
+	} while (!buffer);
 
-		Buffer *buffer;
-		do {
-			buffer = m_buffers.RemoveBegin();
-		} while (!buffer);
+	// Envoie du ack si le buffer était plein.
+	if (!buffer->ack) {
+		buffer->ack = true;
+		SendAck();
+	}
 
-		// Si le buffer était plein, valider le dernier message.
-		if (full) {
-			MainUsart.Send("\nack\n");
-		}
-
-		cmd = ParseCommand(*buffer);
-		/*char buf[200];
-		sprintf(buf, "%i %f %f\n", cmd.type, cmd.pos[0], cmd.pos[1]);
-		MainUsart.Send(buf);*/
-	} while (cmd.type == Command::UNKNOWN);
-
-	/*char buf[100];
-	sprintf(buf, "cmd type %i X %f Y %f\n", cmd.type, cmd.pos[0], cmd.pos[1]);
-	MainUsart.Send(buf);*/
+	Command cmd = ParseCommand(*buffer);
 
 	return cmd;
 }

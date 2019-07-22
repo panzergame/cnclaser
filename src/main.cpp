@@ -44,25 +44,48 @@ void setup()
 	FOREACH_AXIS {
 		Stepper *stepper = steppers[i];
 		stepper->Init();
-// 		stepper->Calibrate();
+		stepper->Calibrate();
 	}
+
+	/*steppers[0]->Calibrate();
+	steppers[1]->Calibrate();*/
 
 	sei();
 
 	welcome();
+
+	/*const float speed = 2.0;
+
+	float pos[2] = {20.0, 38.0};
+	float rel1[2] = {0.0, 16.5};
+	float rel2[2] = {0.0, -16.5};
+	float start[2] = {20.0, 5.0};
+	rasterizer.AddLine(start, 2.0);
+	rasterizer.AddCircle(pos, rel1, Rasterizer::ARC_CCW, speed);
+	rasterizer.AddCircle(start, rel2, Rasterizer::ARC_CCW, speed);*/
 }
 
 void loop()
 {
-	float speed = 5.0;
+	const float speed = 5.0;
 
-	Parser::Command cmd = parser.NextCommand();
+	const Parser::Command cmd = parser.NextCommand();
 
 	switch (cmd.type) {
 		case Parser::Command::LINEAR_MOVE:
 		case Parser::Command::LINEAR_MOVE_FAST:
 		{
 			rasterizer.AddLine(cmd.pos, speed);
+			break;
+		}
+		case Parser::Command::CW_ARC_MOVE:
+		{
+			rasterizer.AddCircle(cmd.pos, cmd.rel, Rasterizer::ARC_CW, speed);
+			break;
+		}
+		case Parser::Command::CCW_ARC_MOVE:
+		{
+			rasterizer.AddCircle(cmd.pos, cmd.rel, Rasterizer::ARC_CCW, speed);
 			break;
 		}
 		default:
@@ -76,16 +99,7 @@ int main()
 {
 	setup();
 
-	/*steppers[0]->Enable();
-	steppers[0]->SetDir(Stepper::UP);
-	for (uint16_t i = 0; i < 4000; ++i) {
-		_delay_us(100);
-		steppers[0]->TicUp();
-		steppers[0]->TicDown();
-	}
-	steppers[0]->Disable();*/
-
-	while(1) {
+	while (true) {
 		loop();
 	}
 }

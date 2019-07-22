@@ -7,16 +7,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+static float atan3(float dy,float dx)
+{
+	float a = atan2(dy, dx);
+	if (a < 0.0) {
+		a = (M_PI * 2.0) + a;
+	}
+	return a;
+}
+
 bool Rasterizer::DrawLineStep(Line &line)
 {
 	line.elapsed += m_ticPeriod;
 
 	if (line.elapsed >= line.period) {
 		line.elapsed -= line.period;
-
-		/*Serial.print(m_curLine);
-		Serial.print(", ");
-		Serial.println(line.stepsLeft);*/
 
 		PORTB ^= _BV(PORTB5);
 
@@ -28,13 +33,8 @@ bool Rasterizer::DrawLineStep(Line &line)
 
 			axis.over += axis.deltaAbs;
 			if (axis.over >= line.steps) {
-				/*Serial.print("Step ");
-				Serial.print(axis.dir);
-				Serial.print(", ");
-				Serial.println(i);*/
 				stepper->TicUp();
 				axis.over -= line.steps;
-// 				++axis.debug;
 				stepper->TicDown();
 			}
 		}
@@ -42,31 +42,22 @@ bool Rasterizer::DrawLineStep(Line &line)
 		--line.stepsLeft;
 	}
 
-	/*if (line.stepsLeft == 0) {
-		FOREACH_AXIS {
-			Axis &axis = line.axis[i];
-
-			Serial.print(axis.deltaAbs);
-			Serial.print(", ");
-			Serial.println(axis.debug);
-		}
-	}*/
-
 	return (line.stepsLeft == 0);
 }
 
 void Rasterizer::Tic()
 {
 	if (!m_lines.Empty()) {
+		// Allumer les moteurs.
+		FOREACH_AXIS {
+			m_steppers[i]->Enable();
+		}
+
 		// Dessin de la ligne actuelle.
 		Line &line = *m_lines.Begin();
 		if (DrawLineStep(line)) {
-			// Actualisation de la dernière position.
-			FOREACH_AXIS {
-				m_pos[i] = line.pos[i];
-			}
-
 			// Suppression lorsque fini.
+// 			MainUsart.Send("Done\n");
 			m_lines.RemoveBegin();
 
 			// Si plus de commande éteindre les moteurs.
@@ -88,7 +79,7 @@ Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], float ticPeriod)
 	}
 }
 
-void Rasterizer::AddLine(float pos[NUM_AXIS], float speed)
+void Rasterizer::AddLine(const float pos[NUM_AXIS], float speed)
 {
 	uint16_t ipos[NUM_AXIS];
 	FOREACH_AXIS {
@@ -98,27 +89,30 @@ void Rasterizer::AddLine(float pos[NUM_AXIS], float speed)
 	AddLine(ipos, speed / STEP_MM);
 }
 
-void Rasterizer::AddLine(uint16_t pos[NUM_AXIS], float speed)
+void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 {
-	while (m_lines.Full());
-
-	if (m_lines.Empty()) {
-		FOREACH_AXIS {
-			m_steppers[i]->Enable();
+	// On évite les lines vide.
+	bool equal = true;
+	FOREACH_AXIS {
+		if (pos[i] != m_pos[i]) {
+			equal = false;
+			break;
 		}
 	}
+
+	// Attendre si le buffer est plein.
+	while (m_lines.Full());
 
 	Line line;
 	line.elapsed = 0;
 	line.steps = 0;
 
-	Line *lastLine = m_lines.End();
-
 	uint32_t dist2 = 0;
 	FOREACH_AXIS {
 		line.pos[i] = pos[i];
 
-		const int16_t delta = ((int16_t)line.pos[i]) - ((int16_t)((lastLine) ? lastLine->pos[i] : m_pos[i]));
+		// Pas à réaliser.
+		const int16_t delta = ((int16_t)line.pos[i]) - ((int16_t)m_pos[i]);
 
 		Axis& axis = line.axis[i];
 		axis.deltaAbs = abs(delta);
@@ -131,6 +125,9 @@ void Rasterizer::AddLine(uint16_t pos[NUM_AXIS], float speed)
 		if (axis.deltaAbs > line.steps) {
 			line.steps = axis.deltaAbs;
 		}
+
+		// Actualisation de la dernière position.
+		m_pos[i] = pos[i];
 	}
 
 	// Distance en nombre de pas.
@@ -139,24 +136,83 @@ void Rasterizer::AddLine(uint16_t pos[NUM_AXIS], float speed)
 	line.period = time / line.steps;
 	line.stepsLeft = line.steps;
 
-	/*char buf[200];
-	sprintf(buf, "steps %i %f (%i %i) ", line.steps, (double)(time / line.steps), line.pos[0], line.pos[1]);
+	/*char buf[100];
+	sprintf(buf, "%i %i %i\n\r", pos[0], pos[1], line.steps);
 	MainUsart.Send(buf);*/
 
 	FOREACH_AXIS {
 		Axis& axis = line.axis[i];
+		// Dépassement initiale avant de faire un pas.
 		axis.over = line.steps / 2;
+	}
 
-		/*uint32_t last = (lastLine) ? lastLine->pos[i] : 0;
-		int32_t diff = ((int32_t)line.pos[i]) - ((int32_t)last);
+	/*char buf[200];
+	sprintf(buf, "%i %f\n\r", line.steps, dist);
+	MainUsart.Send(buf);*/
 
-		sprintf(buf, "Axis %i delta %li abs %li diff %li last %li\n\r", i, axis.delta, (int32_t)axis.deltaAbs, diff, last);
+	m_lines.Add(line);
+}
+
+void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS], ArcDir dir, float speed)
+{
+	float radius2 = 0.0;
+	// Vecteur centre début.
+	float dstart[2];
+	// Vecteur centre fin.
+	float dend[2];
+	float center[2];
+
+	FOREACH_AXIS {
+		radius2 += rel[i] * rel[i];
+		dstart[i] = -rel[i];
+		center[i] = m_pos[i] * STEP_MM + rel[i];
+		dend[i] = pos[i] - center[i];
+	}
+
+	const float radius = sqrt(radius2);
+
+	// Angle start.
+	float angle1 = atan3(dstart[1], dstart[0]);
+	// Angle end.
+	float angle2 = atan3(dend[1], dend[0]);
+	// Arc angle.
+	float theta = angle2 - angle1;
+
+	if (dir > 0 && theta < 0.0) {
+		angle2 += 2.0 * M_PI;
+	}
+	else if (dir < 0 && theta > 0.0) {
+		angle1 += 2.0 * M_PI;
+	}
+
+	theta = angle2 - angle1;
+
+	const float len = fabs(theta) * radius;
+	const uint32_t segments = ceil(len / ARC_PRECISION);
+
+// 	char buf[200];
+	/*char buf[200];
+	sprintf(buf, "a1 %f a2 %f nb %li (%f %f) (%f %f)\n\r", angle1, angle2, segments, dstart[0], dstart[1], dend[0], dend[1]);
+	MainUsart.Send(buf);*/
+
+	for (uint32_t i = 1; i < segments; ++i) {
+		const float scale = ((float)i) / ((float)segments);
+		const float angle3 = (theta * scale) + angle1;
+
+		// Position d'un point sur l'arc.
+		const float spos[2] = {center[0] + cos(angle3) * radius,
+							   center[1] + sin(angle3) * radius};
+
+// 		_delay_ms(10);
+
+		AddLine(spos, speed);
+
+		/*sprintf(buf, "x %f y %f\n\r", spos[0], spos[1]);
 		MainUsart.Send(buf);*/
 	}
 
-	m_lines.Add(line);
 
-	/*Line *newLine = m_lines.End();
-	sprintf(buf, "Added %li %li steps %li\n\r", newLine->pos[0], newLine->pos[1], newLine->steps);
+	/*sprintf(buf, "x %f y %f\n\r", pos[0], pos[1]);
 	MainUsart.Send(buf);*/
+	AddLine(pos, speed);
 }

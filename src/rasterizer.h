@@ -8,12 +8,21 @@ class Rasterizer
 public:
 	enum {
 		NUM_AXIS = 2,
-		MAX_LINE = 32
+		MAX_LINE = 16
+	};
+
+	enum ArcDir
+	{
+		ARC_CW = 1,
+		ARC_CCW = -1
 	};
 
 	// 37.5mm pour 4000
 	static constexpr float STEP_MM = 37.5 / 4000.0;
 	static constexpr float MAX_BOUND = 39.0;
+	// 1mm par segment.
+	static constexpr float ARC_PRECISION = 0.5;
+
 
 private:
 	struct Axis
@@ -48,8 +57,10 @@ public:
 
 	void Tic();
 
-	void AddLine(float pos[NUM_AXIS], float speed);
-	void AddLine(uint16_t pos[NUM_AXIS], float speed);
+	void AddLine(const float pos[NUM_AXIS], float speed);
+	void AddLine(const uint16_t pos[NUM_AXIS], float speed);
+
+	void AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS], ArcDir dir, float speed);
 };
 
 #define FOREACH_AXIS \

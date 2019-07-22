@@ -37,7 +37,7 @@ void Stepper::Calibrate()
 			TicUp();
 			NOP;
 			TicDown();
-			_delay_ms(3);
+			_delay_ms(2);
 		}
 	}
 
@@ -46,7 +46,7 @@ void Stepper::Calibrate()
 		TicUp();
 		NOP;
 		TicDown();
-		_delay_ms(3);
+		_delay_ms(2);
 	}
 	Disable();
 }
