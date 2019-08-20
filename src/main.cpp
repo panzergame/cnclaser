@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 static Stepper stepper1(PORTC, PINC, DDRC, 0, 1, 2, 3, false);
-static Stepper stepper2(PORTD, PIND, DDRD, 2, 3, 4, 5, false);
+static Stepper stepper2(PORTD, PIND, DDRD, 2, 3, 4, 5, true);
 static Stepper *steppers[2] = {&stepper1, &stepper2};
 
 static Rasterizer rasterizer(steppers, Timer::PERIOD_US);
@@ -67,7 +67,7 @@ void setup()
 
 void loop()
 {
-	const float speed = 5.0;
+	const float speed = 1.5;
 
 	const Parser::Command cmd = parser.NextCommand();
 

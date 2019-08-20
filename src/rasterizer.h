@@ -21,7 +21,7 @@ public:
 	static constexpr float STEP_MM = 37.5 / 4000.0;
 	static constexpr float MAX_BOUND = 39.0;
 	// 1mm par segment.
-	static constexpr float ARC_PRECISION = 0.5;
+	static constexpr float ARC_PRECISION = 0.2;
 
 
 private:

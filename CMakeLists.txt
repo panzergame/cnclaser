@@ -22,7 +22,7 @@ cmake_minimum_required(VERSION 2.8)
 set(AVR_UPLOADTOOL avrdude)
 set(AVR_PROGRAMMER arduino)
 set(AVR_UPLOADTOOL_PORT /dev/ttyUSB0)
-set(AVR_UPLOADTOOL_BAUDRATE 57600)
+set(AVR_UPLOADTOOL_BAUDRATE 115200)
 
 ##########################################################################
 # AVR and fuses needs to be set
