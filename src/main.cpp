@@ -1,7 +1,9 @@
 #if 1
 #include "stepper.h"
+#include "laser.h"
 #include "rasterizer.h"
 #include "timer.h"
+#include "pwm.h"
 #include "parser.h"
 #include "circular_buffer.h"
 #include "usart.h"
@@ -15,7 +17,9 @@ static Stepper stepper1(PORTC, PINC, DDRC, 0, 1, 2, 3, true);
 static Stepper stepper2(PORTD, PIND, DDRD, 2, 3, 4, 5, false);
 static Stepper *steppers[2] = {&stepper1, &stepper2};
 
-static Rasterizer rasterizer(steppers, Timer::PERIOD_US);
+static Laser laser;
+
+static Rasterizer rasterizer(steppers, &laser, Timer::PERIOD_US);
 static Parser parser;
 static Usart usart;
 
@@ -39,6 +43,7 @@ void welcome()
 void setup()
 {
 	MainTimer.Init(tic);
+	MainPwm.Init();
 	MainUsart.Init(receive);
 
 	FOREACH_AXIS {
@@ -67,7 +72,7 @@ void setup()
 
 void loop()
 {
-	const float speed = 1.5;
+	const float speed = 0.4;
 
 	const Parser::Command cmd = parser.NextCommand();
 
@@ -88,9 +93,19 @@ void loop()
 			rasterizer.AddCircle(cmd.pos, cmd.rel, Rasterizer::ARC_CCW, speed);
 			break;
 		}
+		case Parser::Command::LASER_ON:
+		{
+			rasterizer.EnableLaser();
+			break;
+		}
+		case Parser::Command::LASER_OFF:
+		{
+			rasterizer.DisableLaser();
+			break;
+		}
 		default:
 		{
-			break; // TODO laser
+			break;
 		}
 	}
 }
@@ -106,41 +121,55 @@ int main()
 
 #else
 
-#define BAUD 9600
-
-#include <util/setbaud.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+/*#include "pwm.h"
+
+void tic(bool enable)
+{
+	if (enable) {
+		PORTC |= _BV(PORTC4);
+	}
+	else {
+		PORTC &= ~(_BV(PORTC4));
+	}
+}*/
+
 int main()
 {
-	UBRR0H = UBRRH_VALUE;
-	UBRR0L = UBRRL_VALUE;
-	UCSR0B |= _BV(RXCIE0) | /*_BV(UDRIE0) |*/ _BV(RXEN0) | _BV(TXEN0);
-	UCSR0C |= _BV(UCSZ00);
+	DDRD |= _BV(DDD6);
 
-	TCCR1A = 0;
-	TCCR1B = _BV(WGM13);
-	TCNT1 = 0;
-	TCCR1B |= _BV(CS12) | _BV(CS10); // 1024 prescaler
-	TIMSK1 |= _BV(TOIE1); // enable timer compare interrupt
+	TCCR0A |= _BV(WGM01) | _BV(WGM00) | _BV(COM0A1);
+	TCCR0B |= _BV(CS00) | _BV(CS01);
+	OCR0A = 0;
+
+// 	MainPwm.Init(tic);
+// 	MainPwm.SetDutyCycle(100);
+
+	/*TCCR0A |= _BV(WGM01) | _BV(WGM00);
+	TCCR0B |= _BV(CS02) | _BV(CS00);
+	OCR0A = 200;
+
+	TIMSK0 |= _BV(OCIE0A) | _BV(TOIE0);*/
+
 
 	sei();
 
 	while (1) {
+// 		PORTC |= _BV(PORTC4);
 	}
 }
 
-ISR(TIMER1_OVF_vect)
+/*ISR(TIMER0_OVF_vect)
 {
-    PORTB ^= _BV(PORTB5);
+	PORTC &= ~(_BV(PORTC4));
+//     PORTC |= _BV(PORTC4);
 }
 
-ISR(USART_RX_vect)
+ISR(TIMER0_COMPA_vect)
 {
-	uint8_t v = UDR0;
-	UDR0 = v;
-    PORTB ^= _BV(PORTB5);
-}
+    PORTC |= _BV(PORTC4);
+}*/
 
 #endif

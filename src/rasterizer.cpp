@@ -1,6 +1,8 @@
 #include "rasterizer.h"
 #include "timer.h"
+#include "pwm.h"
 #include "usart.h"
+#include "laser.h"
 
 #include <util/delay.h>
 #include <math.h>
@@ -23,7 +25,8 @@ bool Rasterizer::DrawLineStep(Line &line)
 	if (line.elapsed >= line.period) {
 		line.elapsed -= line.period;
 
-		PORTB ^= _BV(PORTB5);
+		// Activation du laser
+		m_laser->Enable(line.laserIntensity);
 
 		FOREACH_AXIS {
 			Axis &axis = line.axis[i];
@@ -70,8 +73,10 @@ void Rasterizer::Tic()
 	}
 }
 
-Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], float ticPeriod)
-	:m_ticPeriod(ticPeriod)
+Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], Laser *laser, float ticPeriod)
+	:m_laser(laser),
+	m_ticPeriod(ticPeriod),
+	m_laserIntensity(0)
 {
 	FOREACH_AXIS {
 		m_steppers[i] = steppers[i];
@@ -100,12 +105,19 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 		}
 	}
 
+	if (equal) {
+		return;
+	}
+
 	// Attendre si le buffer est plein.
 	while (m_lines.Full());
 
 	Line line;
 	line.elapsed = 0;
 	line.steps = 0;
+
+	// Activation du laser
+	line.laserIntensity = m_laserIntensity;
 
 	uint32_t dist2 = 0;
 	FOREACH_AXIS {
@@ -215,4 +227,14 @@ void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS],
 	/*sprintf(buf, "x %f y %f\n\r", pos[0], pos[1]);
 	MainUsart.Send(buf);*/
 	AddLine(pos, speed);
+}
+
+void Rasterizer::EnableLaser()
+{
+	m_laserIntensity = 80;
+}
+
+void Rasterizer::DisableLaser()
+{
+	m_laserIntensity = 0;
 }

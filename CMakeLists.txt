@@ -136,8 +136,10 @@ add_avr_executable(
 	main
 	src/usart.cpp
 	src/stepper.cpp
+	src/laser.cpp
 	src/parser.cpp
 	src/rasterizer.cpp
 	src/timer.cpp
+	src/pwm.cpp
 	src/main.cpp
 )

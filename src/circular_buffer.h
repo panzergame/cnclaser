@@ -2,6 +2,10 @@
 
 #include <stdint.h>
 
+/** Fixed size circular buffer
+ * @param Data Data type
+ * @param _Size Buffer size
+ */
 template <class Data, uint16_t _Size>
 class CircularBuffer
 {
@@ -13,19 +17,21 @@ private:
 	volatile uint16_t m_next;
 	volatile uint16_t m_len;
 
-
+	/// Get next wrapped index
 	static uint8_t Next(uint8_t index)
 	{
 		return (index + 1) % Size;
 	}
 
+	/// Get prev wrapped index
 	static uint8_t Prev(uint8_t index)
 	{
 		return (index - 1) % Size;
 	}
 
-public:
 	Data m_data[Size];
+
+public:
 	CircularBuffer()
 		:m_begin(0),
 		m_next(0),
@@ -61,6 +67,9 @@ public:
 		return true;
 	}
 
+	/** Append a null terminated array
+	 * @param datas Array of data null terminated
+	 */
 	bool Add(const Data *datas)
 	{
 		uint8_t i = 0;
@@ -75,6 +84,9 @@ public:
 		return true;
 	}
 
+	/** Remove first element and return its value
+	 * @return first element
+	 */
 	Data *RemoveBegin()
 	{
 		if (Empty()) {
@@ -88,6 +100,7 @@ public:
 		return data;
 	}
 
+	/// Return first element or null if empty
 	Data *Begin()
 	{
 		if (Empty()) {
@@ -97,6 +110,7 @@ public:
 		return &m_data[m_begin];
 	}
 
+	/// Return last element or null if empty
 	Data *End()
 	{
 		if (Empty()) {

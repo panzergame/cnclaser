@@ -4,6 +4,7 @@
 
 #include <avr/io.h>
 
+/// Command parser
 class Parser
 {
 public:
@@ -20,40 +21,45 @@ public:
 		} type;
 
 		float pos[2];
-		// Pour les arcs.
+		/// For arcs only.
 		float rel[2];
 	};
 
 private:
 	enum {
-		BUFFER_SIZE = 48
+		/// Maximum command line size
+		BUFFER_SIZE = 48,
+		/// Command queue length
+		BUFFER_QUEUE_SIZE = 8
 	};
 
 	struct Buffer
 	{
+		/// Command line
 		char data[BUFFER_SIZE];
+		/// Command status, if ack true then the command is accetped and ack sent back
 		bool ack;
-
-		operator bool() const
-		{
-			return true;
-		}
 	};
 
-	CircularBuffer<Buffer, 8> m_buffers;
+	/// Commands queue
+	CircularBuffer<Buffer, BUFFER_QUEUE_SIZE> m_buffers;
+	/// Current buffer
 	Buffer m_buffer;
+	/// Current buffer len, number of character received.
 	uint8_t m_bufferLen;
 
+	/// Determine command type based on command line.
 	Command::Type ParseCommandType(Buffer &buffer) const;
+	/// Determine command type and data from command line.
 	Command ParseCommand(Buffer &buffer) const;
 
+	/// Send back a ack to allow sending next command line.
 	void SendAck();
 
 public:
-
 	Parser();
-
+	/// Receive one character from USART.
 	void Received(uint8_t data);
-
+	/// Wait until valid command and parse it.
 	Command NextCommand();
 };
