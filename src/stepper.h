@@ -33,7 +33,6 @@ private:
 	bool m_invertDir;
 
 public:
-	Stepper() = default;
 	Stepper(volatile uint8_t &port, volatile uint8_t &pin, volatile uint8_t &ddr,
 			uint8_t dirPin, uint8_t stepPin, uint8_t enablePin, uint8_t buttonPin, bool invertDir);
 
