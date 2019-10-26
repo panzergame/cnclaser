@@ -34,12 +34,7 @@ void Timer::Tic()
 	m_func();
 }
 
-volatile uint16_t cnt = 0;
 ISR(TIMER1_OVF_vect)
 {
-	if (cnt++ == 500) {
-		PORTB ^= _BV(PORTB5);
-		cnt = 0;
-	}
 	MainTimer.Tic();
 }

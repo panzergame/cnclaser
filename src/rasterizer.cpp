@@ -60,10 +60,9 @@ void Rasterizer::Tic()
 		Line &line = *m_lines.Begin();
 		if (DrawLineStep(line)) {
 			// Suppression lorsque fini.
-// 			MainUsart.Send("Done\n");
 			m_lines.RemoveBegin();
 
-			// Si plus de commande éteindre les moteurs.
+			// Si aucune de commande éteindre les moteurs.
 			if (m_lines.Empty()) {
 				FOREACH_AXIS {
 					m_steppers[i]->Disable();
@@ -88,10 +87,10 @@ void Rasterizer::AddLine(const float pos[NUM_AXIS], float speed)
 {
 	uint16_t ipos[NUM_AXIS];
 	FOREACH_AXIS {
-		ipos[i] = (uint16_t)(pos[i] / STEP_MM);
+		ipos[i] = (uint16_t)(pos[i] / Config::STEP_MM);
 	}
 
-	AddLine(ipos, speed / STEP_MM);
+	AddLine(ipos, speed / Config::STEP_MM);
 }
 
 void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
@@ -148,19 +147,11 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 	line.period = time / line.steps;
 	line.stepsLeft = line.steps;
 
-	/*char buf[100];
-	sprintf(buf, "%i %i %i\n\r", pos[0], pos[1], line.steps);
-	MainUsart.Send(buf);*/
-
 	FOREACH_AXIS {
 		Axis& axis = line.axis[i];
 		// Dépassement initiale avant de faire un pas.
 		axis.over = line.steps / 2;
 	}
-
-	/*char buf[200];
-	sprintf(buf, "%i %f\n\r", line.steps, dist);
-	MainUsart.Send(buf);*/
 
 	m_lines.Add(line);
 }
@@ -177,7 +168,7 @@ void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS],
 	FOREACH_AXIS {
 		radius2 += rel[i] * rel[i];
 		dstart[i] = -rel[i];
-		center[i] = m_pos[i] * STEP_MM + rel[i];
+		center[i] = m_pos[i] * Config::STEP_MM + rel[i];
 		dend[i] = pos[i] - center[i];
 	}
 
@@ -200,38 +191,25 @@ void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS],
 	theta = angle2 - angle1;
 
 	const float len = fabs(theta) * radius;
-	const uint32_t segments = ceil(len / ARC_PRECISION);
-
-// 	char buf[200];
-	/*char buf[200];
-	sprintf(buf, "a1 %f a2 %f nb %li (%f %f) (%f %f)\n\r", angle1, angle2, segments, dstart[0], dstart[1], dend[0], dend[1]);
-	MainUsart.Send(buf);*/
+	const uint32_t segments = ceil(len / Config::ARC_PRECISION);
 
 	for (uint32_t i = 1; i < segments; ++i) {
 		const float scale = ((float)i) / ((float)segments);
 		const float angle3 = (theta * scale) + angle1;
 
 		// Position d'un point sur l'arc.
-		const float spos[2] = {center[0] + cos(angle3) * radius,
-							   center[1] + sin(angle3) * radius};
-
-// 		_delay_ms(10);
+		const float spos[2] = {center[0] + (float)cos(angle3) * radius,
+							   center[1] + (float)sin(angle3) * radius};
 
 		AddLine(spos, speed);
-
-		/*sprintf(buf, "x %f y %f\n\r", spos[0], spos[1]);
-		MainUsart.Send(buf);*/
 	}
 
-
-	/*sprintf(buf, "x %f y %f\n\r", pos[0], pos[1]);
-	MainUsart.Send(buf);*/
 	AddLine(pos, speed);
 }
 
 void Rasterizer::EnableLaser()
 {
-	m_laserIntensity = 80;
+	m_laserIntensity = 20;
 }
 
 void Rasterizer::DisableLaser()

@@ -2,6 +2,7 @@
 
 #include "stepper.h"
 #include "circular_buffer.h"
+#include "config.h"
 
 class Laser;
 
@@ -10,9 +11,7 @@ class Rasterizer
 public:
 	enum {
 		/// Number of axis managed.
-		NUM_AXIS = 2,
-		/// Maximal line queue size.
-		LINE_QUEUE_SIZE = 16
+		NUM_AXIS = 2
 	};
 
 	enum ArcDir
@@ -20,13 +19,6 @@ public:
 		ARC_CW = 1,
 		ARC_CCW = -1
 	};
-
-	// 37.5mm for 4000 // TODO move in config.h
-	static constexpr float STEP_MM = 37.5 / 4000.0;
-	static constexpr float MAX_BOUND = 39.0;
-	// 1mm par segment.
-	static constexpr float ARC_PRECISION = 0.1;
-
 
 private:
 	/// Axis movement information
@@ -59,7 +51,7 @@ private:
 	};
 
 	/// Line queue.
-	CircularBuffer<Line, LINE_QUEUE_SIZE> m_lines;
+	CircularBuffer<Line, Config::LINE_QUEUE_SIZE> m_lines;
 	/// Stepper motor controllers.
 	Stepper *m_steppers[NUM_AXIS];
 	/// Laser controller.

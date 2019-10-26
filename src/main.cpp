@@ -1,4 +1,3 @@
-#if 1
 #include "stepper.h"
 #include "laser.h"
 #include "rasterizer.h"
@@ -14,7 +13,7 @@
 #include <stdio.h>
 
 static Stepper stepper1(PORTC, PINC, DDRC, 0, 1, 2, 3, true);
-static Stepper stepper2(PORTD, PIND, DDRD, 2, 3, 4, 5, false);
+static Stepper stepper2(PORTD, PIND, DDRD, 2, 3, 4, 5, true);
 static Stepper *steppers[2] = {&stepper1, &stepper2};
 
 static Laser laser;
@@ -52,22 +51,9 @@ void setup()
 		stepper->Calibrate();
 	}
 
-	/*steppers[0]->Calibrate();
-	steppers[1]->Calibrate();*/
-
 	sei();
 
 	welcome();
-
-	/*const float speed = 2.0;
-
-	float pos[2] = {20.0, 38.0};
-	float rel1[2] = {0.0, 16.5};
-	float rel2[2] = {0.0, -16.5};
-	float start[2] = {20.0, 5.0};
-	rasterizer.AddLine(start, 2.0);
-	rasterizer.AddCircle(pos, rel1, Rasterizer::ARC_CCW, speed);
-	rasterizer.AddCircle(start, rel2, Rasterizer::ARC_CCW, speed);*/
 }
 
 void loop()
@@ -118,58 +104,3 @@ int main()
 		loop();
 	}
 }
-
-#else
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-/*#include "pwm.h"
-
-void tic(bool enable)
-{
-	if (enable) {
-		PORTC |= _BV(PORTC4);
-	}
-	else {
-		PORTC &= ~(_BV(PORTC4));
-	}
-}*/
-
-int main()
-{
-	DDRD |= _BV(DDD6);
-
-	TCCR0A |= _BV(WGM01) | _BV(WGM00) | _BV(COM0A1);
-	TCCR0B |= _BV(CS00) | _BV(CS01);
-	OCR0A = 0;
-
-// 	MainPwm.Init(tic);
-// 	MainPwm.SetDutyCycle(100);
-
-	/*TCCR0A |= _BV(WGM01) | _BV(WGM00);
-	TCCR0B |= _BV(CS02) | _BV(CS00);
-	OCR0A = 200;
-
-	TIMSK0 |= _BV(OCIE0A) | _BV(TOIE0);*/
-
-
-	sei();
-
-	while (1) {
-// 		PORTC |= _BV(PORTC4);
-	}
-}
-
-/*ISR(TIMER0_OVF_vect)
-{
-	PORTC &= ~(_BV(PORTC4));
-//     PORTC |= _BV(PORTC4);
-}
-
-ISR(TIMER0_COMPA_vect)
-{
-    PORTC |= _BV(PORTC4);
-}*/
-
-#endif
