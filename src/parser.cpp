@@ -2,6 +2,7 @@
 #include "usart.h"
 
 #include <util/delay.h>
+#include <avr/pgmspace.h>
 #include <stdio.h>
 
 Parser::Command::Type Parser::ParseCommandType(Buffer &buffer) const
@@ -10,7 +11,7 @@ Parser::Command::Type Parser::ParseCommandType(Buffer &buffer) const
 		case 'M':
 		{
 			int type;
-			sscanf(buffer.data, "M%i", &type);
+			sscanf_P(buffer.data, PSTR("M%i"), &type);
 			switch (type) {
 				case 1:
 				{
@@ -29,7 +30,7 @@ Parser::Command::Type Parser::ParseCommandType(Buffer &buffer) const
 		case 'G':
 		{
 			int type;
-			sscanf(buffer.data, "G%i", &type);
+			sscanf_P(buffer.data, PSTR("G%i"), &type);
 			switch (type) {
 				case 0:
 				{
@@ -68,22 +69,22 @@ Parser::Command Parser::ParseCommand(Buffer &buffer) const
 	switch (cmd.type) {
 		case Command::LINEAR_MOVE:
 		{
-			sscanf(buffer.data, "G1 X %f Y %f", &cmd.pos[0], &cmd.pos[1]);
+			sscanf_P(buffer.data, PSTR("G1 X %f Y %f"), &cmd.pos[0], &cmd.pos[1]);
 			break;
 		}
 		case Command::LINEAR_MOVE_FAST:
 		{
-			sscanf(buffer.data, "G0 X %f Y %f", &cmd.pos[0], &cmd.pos[1]);
+			sscanf_P(buffer.data, PSTR("G0 X %f Y %f"), &cmd.pos[0], &cmd.pos[1]);
 			break;
 		}
 		case Command::CW_ARC_MOVE:
 		{
-			sscanf(buffer.data, "G2 X %f Y %f I %f J %f", &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
+			sscanf_P(buffer.data, PSTR("G2 X %f Y %f I %f J %f"), &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
 			break;
 		}
 		case Command::CCW_ARC_MOVE:
 		{
-			sscanf(buffer.data, "G3 X %f Y %f I %f J %f", &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
+			sscanf_P(buffer.data, PSTR("G3 X %f Y %f I %f J %f"), &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
 			break;
 		}
 		default:
@@ -101,7 +102,7 @@ Parser::Command Parser::ParseCommand(Buffer &buffer) const
 
 void Parser::SendAck()
 {
-	MainUsart.Send("ak\n");
+	MainUsart.SendP(PSTR("ak\n"));
 }
 
 Parser::Parser()

@@ -52,7 +52,7 @@ G3 X (float) Y (float) I (float) J (float) - Counter clock wise arc
 
 void ready()
 {
-	MainUsart.Send("Ready\n");
+	MainUsart.SendP(PSTR("Ready\n"));
 }
 
 void setup()
