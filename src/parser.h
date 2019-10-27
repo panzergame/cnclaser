@@ -1,6 +1,7 @@
 #pragma once
 
 #include "circular_buffer.h"
+#include "config.h"
 
 #include <avr/io.h>
 
@@ -26,23 +27,16 @@ public:
 	};
 
 private:
-	enum {
-		/// Maximum command line size
-		BUFFER_SIZE = 48,
-		/// Command queue length
-		BUFFER_QUEUE_SIZE = 8
-	};
-
 	struct Buffer
 	{
 		/// Command line
-		char data[BUFFER_SIZE];
+		char data[Config::CMD_LINE_SIZE];
 		/// Command status, if ack true then the command is accetped and ack sent back
 		bool ack;
 	};
 
 	/// Commands queue
-	CircularBuffer<Buffer, BUFFER_QUEUE_SIZE> m_buffers;
+	CircularBuffer<Buffer, Config::CMD_QUEUE_SIZE> m_buffers;
 	/// Current buffer
 	Buffer m_buffer;
 	/// Current buffer len, number of character received.

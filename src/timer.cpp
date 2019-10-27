@@ -13,13 +13,13 @@ void Timer::Init(void (*func)())
 	TCCR1B = _BV(WGM13);
 	TCNT1 = 0;
 
-	if (PRESCALER == 8) {
+	if (Config::TIMER_PRESCALER == 8) {
 		TCCR1B |= _BV(CS11); // 8 prescaler
 	}
-	else if (PRESCALER == 64) {
+	else if (Config::TIMER_PRESCALER == 64) {
 		TCCR1B |= _BV(CS11) | _BV(CS10); // 64 prescaler
 	}
-	else if (PRESCALER == 256) {
+	else if (Config::TIMER_PRESCALER == 256) {
 		TCCR1B |= _BV(CS12); // 256 prescaler
 	}
 	else {

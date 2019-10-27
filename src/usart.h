@@ -1,18 +1,14 @@
 #pragma once
 
 #include "circular_buffer.h"
+#include "config.h"
 
 /// USART controller for reception and emission.
 class Usart
 {
 private:
-	enum {
-		/// Maximum queue size.
-		QUEUE_SIZE = 16
-	};
-
 	/// Character queue to send until empty.
-	CircularBuffer<char, QUEUE_SIZE> m_tx;
+	CircularBuffer<char, Config::USART_TX_QUEUE_SIZE> m_tx;
 	/// Custom function called when receiving caracter.
 	void (*m_func)(uint8_t data);
 
