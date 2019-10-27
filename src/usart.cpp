@@ -5,6 +5,7 @@
 #include <util/setbaud.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 
 Usart MainUsart;
 
@@ -18,15 +19,26 @@ void Usart::Init(void (*func)(uint8_t data))
 	m_func = func;
 }
 
-void Usart::Send(char data)
+void Usart::Send(char data, bool blocking)
 {
-	m_tx.Add(data);
+	// While the data can't be added and we are blocking in thsi case.
+	while (!m_tx.Add(data) && blocking);
 }
 
-void Usart::Send(const char *datas)
+void Usart::Send(const char *datas, bool blocking)
 {
-	m_tx.Add(datas);
+	for (const char *c = datas; *c != '\0'; ++c) {
+		Send(*c, blocking);
+	}
 }
+
+void Usart::SendP(const char *datas, bool blocking)
+{
+	for (const char *c = datas; pgm_read_byte(c) != '\0'; ++c) {
+		Send(pgm_read_byte(c), blocking);
+	}
+}
+
 
 void Usart::SendNext()
 {

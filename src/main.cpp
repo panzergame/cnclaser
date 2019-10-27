@@ -10,6 +10,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <stdio.h>
 
 static Stepper stepper1(PORTC, PINC, DDRC, 0, 1, 2, 3, true);
@@ -34,9 +35,24 @@ void receive(uint8_t data)
 
 void welcome()
 {
-	char buf[64];
-	sprintf(buf, "Begin %f\n", (double)Timer::PERIOD_US);
-	MainUsart.Send(buf);
+	// Help message
+	static const char buf[512] PROGMEM =
+R"(Welcome to cnclaser
+Commands:
+M1 - Laser on
+M2 - Laser off
+G0 X (float) Y (float) - Fast move
+G1 X (float) Y (float) - Linear move
+G2 X (float) Y (float) I (float) J (float) - Clock wise arc
+G3 X (float) Y (float) I (float) J (float) - Counter clock wise arc
+)";
+
+	MainUsart.SendP(buf);
+}
+
+void ready()
+{
+	MainUsart.Send("Ready\n");
 }
 
 void setup()
@@ -52,8 +68,8 @@ void setup()
 	}
 
 	sei();
-
 	welcome();
+	ready();
 }
 
 void loop()
