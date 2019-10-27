@@ -35,8 +35,11 @@ def send_file(serial, gfile):
 
 def wait_finish(serial):
 	# Toute les lignes envoyé mais attendre pour ne pas fermer la liaison et rédémarrer le proc.
-	while True:
-		time.sleep(1)
+	try:
+		while True:
+			time.sleep(1)
+	except KeyboardInterrupt:
+		print("Exit")
 
 with serial.Serial('/dev/ttyUSB0', 28800) as ser:
 	wait_ready(serial)
