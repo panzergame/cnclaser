@@ -29,8 +29,5 @@ Name=Clang
 [CustomDefinesAndIncludes][ProjectPath0][Includes]
 1=/usr/avr/include/
 
-[MakeBuilder]
-Default Target=upload_main
-
 [Project]
 VersionControlSupport=kdevgit
