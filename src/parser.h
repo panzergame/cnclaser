@@ -24,6 +24,8 @@ public:
 		float pos[2];
 		/// For arcs only.
 		float rel[2];
+		/// Feed rate.
+		uint8_t feed;
 	};
 
 private:

@@ -32,16 +32,6 @@ if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE Release)
 endif(NOT CMAKE_BUILD_TYPE)
 
-
-# /usr/lib/ccache/bin/avr-g++  -DF_CPU=16000000UL  -O2   -fpack-struct -fshort-enums -Wall -pedantic -pedantic-errors -funsigned-char -funsigned-bitfields -ffunction-sections -c -lprintf_flt -lscanf_flt -mmcu=atmega328p -o CMakeFiles/main-atmega328p.elf.dir/src/usart.cpp.obj -c /home/tristan/Compilation/cnclaser/src/usart.cpp
-
-# /usr/lib/ccache/bin/avr-g++  -O2  -Wl,-u,vfprintf -lprintf_flt -Wl,-u,vfscanf -lscanf_flt -mmcu=atmega328p -Wl,--gc-sections -mrelax -Wl,-Map,main-atmega328p.map CMakeFiles/main-atmega328p.elf.dir/src/usart.cpp.obj CMakeFiles/main-atmega328p.elf.dir/src/stepper.cpp.obj CMakeFiles/main-atmega328p.elf.dir/src/laser.cpp.obj CMakeFiles/main-atmega328p.elf.dir/src/parser.cpp.obj CMakeFiles/main-atmega328p.elf.dir/src/rasterizer.cpp.obj CMakeFiles/main-atmega328p.elf.dir/src/timer.cpp.obj CMakeFiles/main-atmega328p.elf.dir/src/pwm.cpp.obj CMakeFiles/main-atmega328p.elf.dir/src/main.cpp.obj  -o main-atmega328p.elf
-
-# /usr/bin/avr-objcopy -j .text -j .data -O ihex main-atmega328p.elf main-atmega328p.hex
-
-# avrdude -p atmega328p -c arduino -b 115200 -U flash:w:main-atmega328p.hex -P /dev/ttyUSB0
-
-
 if(CMAKE_BUILD_TYPE MATCHES Release)
    set(CMAKE_C_FLAGS_RELEASE "-O2")
    set(CMAKE_CXX_FLAGS_RELEASE "-O2")

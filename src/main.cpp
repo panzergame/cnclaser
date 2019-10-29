@@ -42,9 +42,9 @@ Commands:
 M1 - Laser on
 M2 - Laser off
 G0 X (float) Y (float) - Fast move
-G1 X (float) Y (float) - Linear move
-G2 X (float) Y (float) I (float) J (float) - Clock wise arc
-G3 X (float) Y (float) I (float) J (float) - Counter clock wise arc
+G1 X (float) Y (float) F (int) - Linear move
+G2 X (float) Y (float) I (float) J (float) F (int) - Clock wise arc
+G3 X (float) Y (float) I (float) J (float) F (int) - Counter clock wise arc
 )";
 
 	MainUsart.SendP(buf);
@@ -72,27 +72,36 @@ void setup()
 	ready();
 }
 
+float feedRateToSpeed(int feed)
+{
+	// Convert from min to second.
+	return float(feed) / 60.f;
+}
+
 void loop()
 {
-	const float speed = 0.4;
-
 	const Parser::Command cmd = parser.NextCommand();
 
+	// TODO mediator
 	switch (cmd.type) {
 		case Parser::Command::LINEAR_MOVE:
+		{
+			rasterizer.AddLine(cmd.pos, feedRateToSpeed(cmd.feed));
+			break;
+		}
 		case Parser::Command::LINEAR_MOVE_FAST:
 		{
-			rasterizer.AddLine(cmd.pos, speed);
+			rasterizer.AddLine(cmd.pos, Config::LASER_OFF_SPEED);
 			break;
 		}
 		case Parser::Command::CW_ARC_MOVE:
 		{
-			rasterizer.AddCircle(cmd.pos, cmd.rel, Rasterizer::ARC_CW, speed);
+			rasterizer.AddCircle(cmd.pos, cmd.rel, Rasterizer::ARC_CW, feedRateToSpeed(cmd.feed));
 			break;
 		}
 		case Parser::Command::CCW_ARC_MOVE:
 		{
-			rasterizer.AddCircle(cmd.pos, cmd.rel, Rasterizer::ARC_CCW, speed);
+			rasterizer.AddCircle(cmd.pos, cmd.rel, Rasterizer::ARC_CCW, feedRateToSpeed(cmd.feed));
 			break;
 		}
 		case Parser::Command::LASER_ON:

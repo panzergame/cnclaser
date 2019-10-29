@@ -69,7 +69,7 @@ Parser::Command Parser::ParseCommand(Buffer &buffer) const
 	switch (cmd.type) {
 		case Command::LINEAR_MOVE:
 		{
-			sscanf_P(buffer.data, PSTR("G1 X %f Y %f"), &cmd.pos[0], &cmd.pos[1]);
+			sscanf_P(buffer.data, PSTR("G1 X %f Y %f F%i"), &cmd.pos[0], &cmd.pos[1], &cmd.feed);
 			break;
 		}
 		case Command::LINEAR_MOVE_FAST:
@@ -79,12 +79,12 @@ Parser::Command Parser::ParseCommand(Buffer &buffer) const
 		}
 		case Command::CW_ARC_MOVE:
 		{
-			sscanf_P(buffer.data, PSTR("G2 X %f Y %f I %f J %f"), &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
+			sscanf_P(buffer.data, PSTR("G2 X %f Y %f I %f J %f F%i"), &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1], &cmd.feed);
 			break;
 		}
 		case Command::CCW_ARC_MOVE:
 		{
-			sscanf_P(buffer.data, PSTR("G3 X %f Y %f I %f J %f"), &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1]);
+			sscanf_P(buffer.data, PSTR("G3 X %f Y %f I %f J %f F%i"), &cmd.pos[0], &cmd.pos[1], &cmd.rel[0], &cmd.rel[1], &cmd.feed);
 			break;
 		}
 		default:
