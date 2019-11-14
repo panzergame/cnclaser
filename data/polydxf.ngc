@@ -1,0 +1,44 @@
+(Generated with: DXF2GCODE, Version: Py3.5.7 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
+(Created from file: /home/tristan/Compilation/cnclaser/data/polydxf.dxf)
+(Output format description: G-CODE for LinuxCNC)
+(Time: Tue Oct 29 11:31:36 2019)
+
+
+
+G0 X   4.000 Y   6.536
+M1
+G1 X   3.000 Y  10.000 F10
+G1 X   4.000 Y  13.464 F10
+G1 X   6.000 Y  13.464 F10
+G1 X   7.000 Y  10.000 F10
+G1 X   6.000 Y   6.536 F10
+G1 X   4.000 Y   6.536 F10
+M2
+G0 X   3.500 Y   4.804
+M1
+G1 X   2.000 Y  10.000 F10
+G1 X   3.500 Y  15.196 F10
+G1 X   6.500 Y  15.196 F10
+G1 X   8.000 Y  10.000 F10
+G1 X   6.500 Y   4.804 F10
+G1 X   3.500 Y   4.804 F10
+M2
+G0 X   4.500 Y   8.268
+M1
+G1 X   4.000 Y  10.000 F10
+G1 X   4.500 Y  11.732 F10
+G1 X   5.500 Y  11.732 F10
+G1 X   6.000 Y  10.000 F10
+G1 X   5.500 Y   8.268 F10
+G1 X   4.500 Y   8.268 F10
+M2
+G0 X   3.000 Y   3.072
+M1
+G1 X   1.000 Y  10.000 F10
+G1 X   3.000 Y  16.928 F10
+G1 X   7.000 Y  16.928 F10
+G1 X   9.000 Y  10.000 F10
+G1 X   7.000 Y   3.072 F10
+G1 X   3.000 Y   3.072 F10
+M2
+G0 X   0.000 Y   0.000

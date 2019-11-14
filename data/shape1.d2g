@@ -1,0 +1,12 @@
+# +~+~+~ DXF2GCODE project file V1.2 ~+~+~+
+d2g.file = "/home/tristan/Compilation/cnclaser/data/shape1.dxf"
+d2g.point_tol = 0.001
+d2g.fitting_tol = 0.001
+d2g.scale = 1.0
+d2g.rot = 0.0
+d2g.wpzero_x = 0.0
+d2g.wpzero_y = 0.0
+d2g.split_lines = False
+d2g.aut_cut_com = False
+d2g.machine_type = "milling"
+d2g.layers = [{'speed': 6000.0, 'safe_margin': 3.0, 'start_radius': 0.2, 'name': '0', 'shapes': [{'start_mill_depth': 0.0, 'disabled': False, 'f_g1_plane': 5.0, 'mill_depth': -1.0, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -1.0, 'start_x': 3.999999999999999, 'hash_': 'd1ee47c42a709b9382028c0c0d3c0b52f0516da2', 'cut_cor': 42, 'start_y': 3.267949192431123, 'cw': True}, {'start_mill_depth': 0.0, 'disabled': False, 'f_g1_plane': 30.0, 'mill_depth': -20.0, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -1.0, 'start_x': 2.7878679656440357, 'hash_': 'bc391e859ef33f9a49452233196028187129e81f', 'cut_cor': 42, 'start_y': 5.787867965644036, 'cw': True}, {'start_mill_depth': 0.0, 'disabled': False, 'f_g1_plane': 30.0, 'mill_depth': -20.0, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -1.0, 'start_x': 6.787867965644036, 'hash_': '65ab0886a09bffd3a8797d5087daa631fa9a1f21', 'cut_cor': 42, 'start_y': 5.787867965644036, 'cw': True}, {'start_mill_depth': 0.0, 'disabled': False, 'f_g1_plane': 30.0, 'mill_depth': -20.0, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -1.0, 'start_x': 6.787867965644036, 'hash_': '76ae53059ecd44bbd1c4fa20c1cf422a662aac69', 'cut_cor': 42, 'start_y': 3.7878679656440357, 'cw': True}, {'start_mill_depth': 0.0, 'disabled': False, 'f_g1_plane': 30.0, 'mill_depth': -20.0, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -1.0, 'start_x': 2.7878679656440357, 'hash_': '4c1aacf416c466901fa2fb6d98208f740bc47cab', 'cut_cor': 42, 'start_y': 3.7878679656440353, 'cw': True}, {'start_mill_depth': 0.0, 'disabled': False, 'f_g1_plane': 5.0, 'mill_depth': -1.0, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -1.0, 'start_x': 2.8786796564403576, 'hash_': '30edf0b43e546fcaa527ea52de43981820634215', 'cut_cor': 41, 'start_y': 2.878679656440357, 'cw': True}], 'diameter': 0.3, 'tool_nr': 1, 'retract': 15.0}]

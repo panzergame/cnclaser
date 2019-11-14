@@ -1,0 +1,15 @@
+(Generated with: DXF2GCODE, Version: Py3.5.5 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
+(Created from file: /home/tristan/Untitled1.dxf)
+(Output format description: G-CODE for LinuxCNC)
+(Time: Sun Jul 21 14:06:28 2019)
+
+
+
+G0 X   7.327 Y   4.427
+M1
+G2 X  18.673 Y  15.773 I   5.673 J   5.673
+G2 X   7.327 Y   4.427 I  -5.673 J  -5.673
+G2 X  18.673 Y  15.773 I   5.673 J   5.673
+G2 X   7.327 Y   4.427 I  -5.673 J  -5.673
+M2
+G0 X   0.000 Y   0.000

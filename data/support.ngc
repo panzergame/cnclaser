@@ -1,0 +1,48 @@
+(Generated with: DXF2GCODE, Version: Py3.5.5 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
+(Created from file: /home/tristan/support.dxf)
+(Output format description: G-CODE for LinuxCNC)
+(Time: Thu Aug 22 20:27:25 2019)
+
+
+
+G0 X   3.988 Y   5.896
+M1
+G2 X   4.196 Y   6.104 I   0.104 J   0.104
+G2 X   3.988 Y   5.896 I  -0.104 J  -0.104
+M2
+G0 X   6.996 Y   5.904
+M1
+G2 X   7.188 Y   6.096 I   0.096 J   0.096
+G2 X   6.996 Y   5.904 I  -0.096 J  -0.096
+M2
+G0 X   5.929 Y   2.929
+M1
+G2 X   6.071 Y   3.071 I   0.071 J   0.071
+G2 X   5.929 Y   2.929 I  -0.071 J  -0.071
+M2
+G0 X   2.929 Y   2.929
+M1
+G2 X   3.071 Y   3.071 I   0.071 J   0.071
+G2 X   2.929 Y   2.929 I  -0.071 J  -0.071
+M2
+G0 X   6.677 Y   6.949
+M1
+G2 X   6.779 Y   7.051 I   0.051 J   0.051
+G2 X   6.677 Y   6.949 I  -0.051 J  -0.051
+M2
+G0 X   3.637 Y   6.910
+M1
+G2 X   3.818 Y   7.090 I   0.090 J   0.090
+G2 X   3.637 Y   6.910 I  -0.090 J  -0.090
+M2
+G0 X   8.468 Y   1.920
+M1
+G2 X   8.628 Y   2.080 I   0.080 J   0.080
+G2 X   8.468 Y   1.920 I  -0.080 J  -0.080
+M2
+G0 X   5.468 Y   1.920
+M1
+G2 X   5.628 Y   2.080 I   0.080 J   0.080
+G2 X   5.468 Y   1.920 I  -0.080 J  -0.080
+M2
+G0 X   0.000 Y   0.000

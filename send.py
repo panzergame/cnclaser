@@ -44,8 +44,9 @@ def wait_finish(serial):
 with serial.Serial('/dev/ttyUSB0', 28800) as ser:
 	wait_ready(serial)
 
-	with open(sys.argv[1]) as gfile:
-		send_file(serial, gfile)
+	for i in range(1): # TODO seek
+		with open(sys.argv[1]) as gfile:
+			send_file(serial, gfile)
 
 	wait_finish(serial)
 

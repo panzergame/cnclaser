@@ -48,6 +48,8 @@ private:
 		float elapsed;
 		/// Laser intensity during this line.
 		uint8_t laserIntensity;
+		/// Laser pause before moving used to heat surface.
+		float laserPause;
 	};
 
 	/// Line queue.
@@ -60,7 +62,9 @@ private:
 	/// Time bewteen tics.
 	float m_ticPeriod;
 	/// Position of last scheduled line.
-	uint16_t m_pos[NUM_AXIS];
+	uint16_t m_lastPos[NUM_AXIS];
+	/// Last sheduled line laser intensity.
+	uint16_t m_lastLaserIntensity;
 	/// Laser intensity used for next line.
 	uint8_t m_laserIntensity;
 
@@ -68,6 +72,11 @@ private:
 	 * @return True if finished
 	 */
 	bool DrawLineStep(Line &line);
+
+	/** Start laser and manage heat time.
+	 * @return True when laser is started and ready to move
+	 */
+	bool StartLaser(Line &line);
 
 public:
 	Rasterizer(Stepper *steppers[NUM_AXIS], Laser *laser, float ticPeriod);

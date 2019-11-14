@@ -1,0 +1,12 @@
+# +~+~+~ DXF2GCODE project file V1.2 ~+~+~+
+d2g.file = "/home/tristan/Compilation/cnclaser/data/test1.dxf"
+d2g.point_tol = 0.001
+d2g.fitting_tol = 0.001
+d2g.scale = 1.0
+d2g.rot = 0.0
+d2g.wpzero_x = 0.0
+d2g.wpzero_y = 0.0
+d2g.split_lines = False
+d2g.aut_cut_com = False
+d2g.machine_type = "milling"
+d2g.layers = [{'diameter': 2.0, 'start_radius': 0.2, 'speed': 6000.0, 'name': '0', 'shapes': [{'cut_cor': 40, 'hash_': 'c120fc81868085f475fe437e78ff5187f75704eb', 'cw': True, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -3.0, 'f_g1_plane': 20.0, 'disabled': False, 'start_y': 9.0, 'mill_depth': -3.0, 'start_x': 7.0, 'start_mill_depth': 0.0}], 'tool_nr': 1, 'safe_margin': 3.0, 'retract': 15.0}]

@@ -1,0 +1,12 @@
+# +~+~+~ DXF2GCODE project file V1.2 ~+~+~+
+d2g.file = "/home/tristan/Compilation/cnclaser/data/polydxf.dxf"
+d2g.point_tol = 0.001
+d2g.fitting_tol = 0.001
+d2g.scale = 0.1
+d2g.rot = 0.0
+d2g.wpzero_x = 0.0
+d2g.wpzero_y = 0.0
+d2g.split_lines = False
+d2g.aut_cut_com = False
+d2g.machine_type = "lathe"
+d2g.layers = [{'retract': 15.0, 'shapes': [{'disabled': False, 'mill_depth': -3.0, 'start_x': 4.499999999999999, 'cut_cor': 40, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'start_y': 4.133974596215562, 'cw': True, 'hash_': '366a1fbec4f0e367e2ce573f8ce42b89453c8479', 'f_g1_plane': 40.0, 'slice_depth': -3.0, 'start_mill_depth': 0.0}, {'disabled': False, 'mill_depth': -3.0, 'start_x': 3.4999999999999996, 'cut_cor': 40, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'start_y': 2.4019237886466853, 'cw': True, 'hash_': '615aadc6530e5089b73172c6af9c1739291cd24a', 'f_g1_plane': 40.0, 'slice_depth': -3.0, 'start_mill_depth': 0.0}, {'disabled': False, 'mill_depth': -3.0, 'start_x': 2.9999999999999982, 'cut_cor': 40, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'start_y': 1.5358983848622472, 'cw': True, 'hash_': '24a306d6752aadca0dcea26c512ffe0ca65fc1c7', 'f_g1_plane': 40.0, 'slice_depth': -3.0, 'start_mill_depth': 0.0}, {'disabled': False, 'mill_depth': -3.0, 'start_x': 3.9999999999999996, 'cut_cor': 40, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'start_y': 3.2679491924311246, 'cw': True, 'hash_': 'd1ee47c42a709b9382028c0c0d3c0b52f0516da2', 'f_g1_plane': 40.0, 'slice_depth': -3.0, 'start_mill_depth': 0.0}], 'safe_margin': 3.0, 'start_radius': 0.2, 'speed': 6000.0, 'diameter': 2.0, 'tool_nr': 1, 'name': '0'}]

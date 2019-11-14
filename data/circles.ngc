@@ -1,0 +1,38 @@
+(Generated with: DXF2GCODE, Version: Py3.5.7 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
+(Created from file: /home/tristan/Compilation/cnclaser/data/circles.dxf)
+(Output format description: G-CODE for LinuxCNC)
+(Time: Mon Nov 11 15:38:59 2019)
+
+
+
+G0 X   1.293 Y   3.293
+M1
+G2 X   2.707 Y   4.707 I   0.707 J   0.707 F40
+G2 X   1.293 Y   3.293 I  -0.707 J  -0.707 F40
+M2
+G0 X   1.293 Y   0.293
+M1
+G2 X   2.707 Y   1.707 I   0.707 J   0.707 F40
+G2 X   1.293 Y   0.293 I  -0.707 J  -0.707 F40
+M2
+G0 X   4.293 Y   0.293
+M1
+G2 X   5.707 Y   1.707 I   0.707 J   0.707 F40
+G2 X   4.293 Y   0.293 I  -0.707 J  -0.707 F40
+M2
+G0 X   7.293 Y   0.293
+M1
+G2 X   8.707 Y   1.707 I   0.707 J   0.707 F40
+G2 X   7.293 Y   0.293 I  -0.707 J  -0.707 F40
+M2
+G0 X   7.293 Y   3.293
+M1
+G2 X   8.707 Y   4.707 I   0.707 J   0.707 F40
+G2 X   7.293 Y   3.293 I  -0.707 J  -0.707 F40
+M2
+G0 X   4.293 Y   3.293
+M1
+G2 X   5.707 Y   4.707 I   0.707 J   0.707 F40
+G2 X   4.293 Y   3.293 I  -0.707 J  -0.707 F40
+M2
+G0 X   0.000 Y   0.000

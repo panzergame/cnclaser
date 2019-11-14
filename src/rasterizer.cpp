@@ -25,9 +25,6 @@ bool Rasterizer::DrawLineStep(Line &line)
 	if (line.elapsed >= line.period) {
 		line.elapsed -= line.period;
 
-		// Activation du laser
-		m_laser->Enable(line.laserIntensity);
-
 		FOREACH_AXIS {
 			Axis &axis = line.axis[i];
 			Stepper *stepper = m_steppers[i];
@@ -48,24 +45,40 @@ bool Rasterizer::DrawLineStep(Line &line)
 	return (line.stepsLeft == 0);
 }
 
+bool Rasterizer::StartLaser(Line &line)
+{
+	// Activation du laser
+	m_laser->Enable(line.laserIntensity);
+	if (line.laserPause <= 0.0f) {
+		return true;
+	}
+
+	line.laserPause -= m_ticPeriod;
+
+	return false;
+}
+
 void Rasterizer::Tic()
 {
 	if (!m_lines.Empty()) {
-		// Allumer les moteurs.
-		FOREACH_AXIS {
-			m_steppers[i]->Enable();
-		}
-
-		// Dessin de la ligne actuelle.
 		Line &line = *m_lines.Begin();
-		if (DrawLineStep(line)) {
-			// Suppression lorsque fini.
-			m_lines.RemoveBegin();
 
-			// Si aucune de commande éteindre les moteurs.
-			if (m_lines.Empty()) {
-				FOREACH_AXIS {
-					m_steppers[i]->Disable();
+		if (StartLaser(line)) {
+			// Allumer les moteurs.
+			FOREACH_AXIS {
+				m_steppers[i]->Enable();
+			}
+
+			// Dessin de la ligne actuelle.
+			if (DrawLineStep(line)) {
+				// Suppression lorsque fini.
+				m_lines.RemoveBegin();
+
+				// Si aucune de commande éteindre les moteurs.
+				if (m_lines.Empty()) {
+					FOREACH_AXIS {
+						m_steppers[i]->Disable();
+					}
 				}
 			}
 		}
@@ -75,11 +88,12 @@ void Rasterizer::Tic()
 Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], Laser *laser, float ticPeriod)
 	:m_laser(laser),
 	m_ticPeriod(ticPeriod),
+	m_lastLaserIntensity(0),
 	m_laserIntensity(0)
 {
 	FOREACH_AXIS {
 		m_steppers[i] = steppers[i];
-		m_pos[i] = 0;
+		m_lastPos[i] = 0;
 	}
 }
 
@@ -98,7 +112,7 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 	// On évite les lines vide.
 	bool equal = true;
 	FOREACH_AXIS {
-		if (pos[i] != m_pos[i]) {
+		if (pos[i] != m_lastPos[i]) {
 			equal = false;
 			break;
 		}
@@ -116,14 +130,16 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 	line.steps = 0;
 
 	// Activation du laser
+	line.laserPause = (m_lastLaserIntensity == 0) ? 1e6f : 0.0f; // TODO constante ou bool
 	line.laserIntensity = m_laserIntensity;
+	m_lastLaserIntensity = m_laserIntensity;
 
 	uint32_t dist2 = 0;
 	FOREACH_AXIS {
 		line.pos[i] = pos[i];
 
 		// Pas à réaliser.
-		const int16_t delta = ((int16_t)line.pos[i]) - ((int16_t)m_pos[i]);
+		const int16_t delta = ((int16_t)line.pos[i]) - ((int16_t)m_lastPos[i]);
 
 		Axis& axis = line.axis[i];
 		axis.deltaAbs = abs(delta);
@@ -138,7 +154,7 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 		}
 
 		// Actualisation de la dernière position.
-		m_pos[i] = pos[i];
+		m_lastPos[i] = pos[i];
 	}
 
 	// Distance en nombre de pas.
@@ -168,7 +184,7 @@ void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS],
 	FOREACH_AXIS {
 		radius2 += rel[i] * rel[i];
 		dstart[i] = -rel[i];
-		center[i] = m_pos[i] * Config::STEP_MM + rel[i];
+		center[i] = m_lastPos[i] * Config::STEP_MM + rel[i];
 		dend[i] = pos[i] - center[i];
 	}
 
@@ -209,7 +225,7 @@ void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS],
 
 void Rasterizer::EnableLaser()
 {
-	m_laserIntensity = 20;
+	m_laserIntensity = 30;
 }
 
 void Rasterizer::DisableLaser()

@@ -1,0 +1,16 @@
+(Generated with: DXF2GCODE, Version: Py3.5.7 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
+(Created from file: /home/tristan/Compilation/cnclaser/data/arcs.dxf)
+(Output format description: G-CODE for LinuxCNC)
+(Time: Thu Nov 14 09:41:50 2019)
+
+
+
+G0 X   7.704 Y   5.901
+M1
+G2 X   2.296 Y   4.099 I  -2.704 J  -0.901 F20
+M2
+G0 X   0.722 Y   5.907
+M1
+G2 X   1.557 Y   9.443 I   3.278 J   1.093 F20
+M2
+G0 X   0.000 Y   0.000

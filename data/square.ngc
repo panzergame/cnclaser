@@ -1,0 +1,19 @@
+(Generated with: DXF2GCODE, Version: Py3.5.7 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
+(Created from file: /home/tristan/Compilation/cnclaser/data/square.dxf)
+(Output format description: G-CODE for LinuxCNC)
+(Time: Mon Nov 11 16:17:04 2019)
+
+
+
+G0 X   2.000 Y   1.850
+M1
+G2 X   1.850 Y   2.000 I   0.000 J   0.150 F40
+G1 X   1.850 Y  22.000 F40
+G2 X   2.000 Y  22.150 I   0.150 J   0.000 F40
+G1 X  22.000 Y  22.150 F40
+G2 X  22.150 Y  22.000 I   0.000 J  -0.150 F40
+G1 X  22.150 Y   2.000 F40
+G2 X  22.000 Y   1.850 I  -0.150 J   0.000 F40
+G1 X   2.000 Y   1.850 F40
+M2
+G0 X   0.000 Y   0.000

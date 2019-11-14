@@ -1,0 +1,12 @@
+# +~+~+~ DXF2GCODE project file V1.2 ~+~+~+
+d2g.file = "/home/tristan/Compilation/cnclaser/data/squares.dxf"
+d2g.point_tol = 0.001
+d2g.fitting_tol = 0.001
+d2g.scale = 1.0
+d2g.rot = 0.0
+d2g.wpzero_x = 0.0
+d2g.wpzero_y = 0.0
+d2g.split_lines = False
+d2g.aut_cut_com = False
+d2g.machine_type = "milling"
+d2g.layers = [{'diameter': 2.0, 'start_radius': 0.2, 'speed': 6000.0, 'name': '0', 'shapes': [{'cut_cor': 40, 'hash_': 'ee21524cf03fc0642089db70519ed676d8aeda0e', 'cw': True, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -3.0, 'f_g1_plane': 20.0, 'disabled': False, 'start_y': 3.0, 'mill_depth': -3.0, 'start_x': 4.0, 'start_mill_depth': 0.0}, {'cut_cor': 40, 'hash_': '8b852967e8fc0b5ad139087dd35be159cdea4e7c', 'cw': True, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -3.0, 'f_g1_plane': 20.0, 'disabled': False, 'start_y': 1.0, 'mill_depth': -3.0, 'start_x': 5.0, 'start_mill_depth': 0.0}, {'cut_cor': 40, 'hash_': '2a029650daf2ea12b2562ac5d7d1afaa6ab820af', 'cw': True, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -3.0, 'f_g1_plane': 20.0, 'disabled': False, 'start_y': 1.0, 'mill_depth': -3.0, 'start_x': 3.0, 'start_mill_depth': 0.0}, {'cut_cor': 40, 'hash_': '62546de61d160ded8cddd4c5e359b4b1e1021684', 'cw': True, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -3.0, 'f_g1_plane': 20.0, 'disabled': False, 'start_y': 1.0, 'mill_depth': -3.0, 'start_x': 1.0, 'start_mill_depth': 0.0}, {'cut_cor': 40, 'hash_': 'a256d7c20d0dc52e1699ee6ef7ba14d7418369b3', 'cw': True, 'send_to_TSP': False, 'f_g1_depth': 15.0, 'slice_depth': -3.0, 'f_g1_plane': 20.0, 'disabled': False, 'start_y': 3.0, 'mill_depth': -3.0, 'start_x': 1.0, 'start_mill_depth': 0.0}], 'tool_nr': 1, 'safe_margin': 3.0, 'retract': 15.0}]
