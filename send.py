@@ -7,7 +7,7 @@ def print_uart(data):
 
 def valid_cmd(line):
 	return line.startswith("G0") or line.startswith("G1") or \
-			line.startswith("G1") or line.startswith("G2") or \
+			line.startswith("G2") or line.startswith("G3") or \
 			line.startswith("M1") or line.startswith("M2")
 
 def wait_ready(serial):

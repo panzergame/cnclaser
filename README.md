@@ -13,7 +13,7 @@ Install cmake-avr and :
 mkdir -p build
 cd build
 cmake ..
-make upload_main
+make install
 ```
 
 This should build and send it to your arduino.

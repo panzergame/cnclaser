@@ -49,13 +49,13 @@ bool Rasterizer::StartLaser(Line &line)
 {
 	// Activation du laser
 	m_laser->Enable(line.laserIntensity);
-	if (line.laserPause <= 0.0f) {
+	/*if (line.laserPause <= 0.0f) {
 		return true;
 	}
 
-	line.laserPause -= m_ticPeriod;
+	line.laserPause -= m_ticPeriod;*/
 
-	return false;
+	return true; // false
 }
 
 void Rasterizer::Tic()
@@ -129,8 +129,15 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 	line.elapsed = 0;
 	line.steps = 0;
 
-	// Activation du laser
-	line.laserPause = (m_lastLaserIntensity == 0) ? 1e6f : 0.0f; // TODO constante ou bool
+	// Change of laser intensity could introduce a pause linear to the intensity gap.
+// 	line.laserPause = fmax((m_laserIntensity - m_lastLaserIntensity) * 1e5f, 0.0f);
+	if (m_lastLaserIntensity == Config::LASER_OFF_INTENSITY && m_laserIntensity != m_lastLaserIntensity) {
+		line.laserPause = 1e9f / m_laserIntensity;
+	}
+	else {
+		line.laserPause = 0.0f;
+	}
+
 	line.laserIntensity = m_laserIntensity;
 	m_lastLaserIntensity = m_laserIntensity;
 
@@ -223,12 +230,12 @@ void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS],
 	AddLine(pos, speed);
 }
 
-void Rasterizer::EnableLaser()
+void Rasterizer::EnableLaser(uint8_t intensity)
 {
-	m_laserIntensity = 30;
+	m_laserIntensity = intensity;
 }
 
 void Rasterizer::DisableLaser()
 {
-	m_laserIntensity = 0;
+	m_laserIntensity = Config::LASER_OFF_INTENSITY;
 }

@@ -1,0 +1,12 @@
+(Generated with: DXF2GCODE, Version: Py3.5.7 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
+(Created from file: /home/tristan/Compilation/cnclaser/data/branche2.dxf)
+(Output format description: G-CODE for LinuxCNC)
+(Time: Mon Nov 18 17:29:31 2019)
+
+
+
+G0 X  39.825 Y  36.138
+M1 S50
+G2 X  39.820 Y  36.146 I   0.012 J   0.012 F20
+G2 X  39.808 Y  36.219 I   0.369 J   0.097 F20
+M2

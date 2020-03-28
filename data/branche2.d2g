@@ -1,0 +1,12 @@
+# +~+~+~ DXF2GCODE project file V1.2 ~+~+~+
+d2g.file = "/home/tristan/Compilation/cnclaser/data/branche2.dxf"
+d2g.point_tol = 0.001
+d2g.fitting_tol = 0.001
+d2g.scale = 0.5
+d2g.rot = 0.0
+d2g.wpzero_x = -18.99679551380335
+d2g.wpzero_y = -13.5
+d2g.split_lines = False
+d2g.aut_cut_com = False
+d2g.machine_type = "milling"
+d2g.layers = [{'name': '0', 'retract': 15.0, 'shapes': [{'cut_cor': 42, 'f_g1_depth': 15.0, 'start_mill_depth': 0.0, 'send_to_TSP': False, 'start_y': 2.275416650000011, 'f_g1_plane': 40.0, 'hash_': '2624362d9e488de12220585fc38293f4e1ed5f63', 'mill_depth': -6.0, 'slice_depth': -3.0, 'start_x': 14.043760036196645, 'disabled': False, 'cw': True}, {'cut_cor': 42, 'f_g1_depth': 15.0, 'start_mill_depth': 0.0, 'send_to_TSP': False, 'start_y': 7.713486099999994, 'f_g1_plane': 40.0, 'hash_': 'f97ca0f05dc562ab6bd3deea1eeb0c3e6168b3a8', 'mill_depth': -6.0, 'slice_depth': -3.0, 'start_x': 2.1216350361966505, 'disabled': False, 'cw': True}, {'cut_cor': 42, 'f_g1_depth': 15.0, 'start_mill_depth': 0.0, 'send_to_TSP': False, 'start_y': 5.95238047515663, 'f_g1_plane': 40.0, 'hash_': '17ad0ff493e81a545ed8c26da911d0c2a53d98ad', 'mill_depth': -6.0, 'slice_depth': -3.0, 'start_x': 3.287088456489503, 'disabled': False, 'cw': True}, {'cut_cor': 42, 'f_g1_depth': 15.0, 'start_mill_depth': 0.0, 'send_to_TSP': False, 'start_y': 4.0490595738899025, 'f_g1_plane': 40.0, 'hash_': '658637992afd502986a01492c2b584c876690c3a', 'mill_depth': -6.0, 'slice_depth': -3.0, 'start_x': 5.833812374407852, 'disabled': False, 'cw': True}, {'cut_cor': 41, 'f_g1_depth': 15.0, 'start_mill_depth': 0.0, 'send_to_TSP': False, 'start_y': 3.469916430271006, 'f_g1_plane': 40.0, 'hash_': '55e07eedfde1d61326b988a2fce67b72c3a2435f', 'mill_depth': -6.0, 'slice_depth': -3.0, 'start_x': 2.933951504825494, 'disabled': False, 'cw': True}], 'start_radius': 0.2, 'speed': 20.0, 'diameter': 0.45, 'tool_nr': 1, 'safe_margin': 3.0}]

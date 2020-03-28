@@ -1,12 +1,12 @@
 (Generated with: DXF2GCODE, Version: Py3.5.7 PyQt5.10.1, Date: $Date: Thu Jan 3 16:29:29 2019 +0100 $)
 (Created from file: /home/tristan/Compilation/cnclaser/data/branche1.dxf)
 (Output format description: G-CODE for LinuxCNC)
-(Time: Mon Nov 18 16:46:28 2019)
+(Time: Mon Nov 18 17:18:00 2019)
 
 
 
 G0 X   6.461 Y   1.989
-M1 S6000
+M1 S20
 G2 X   6.456 Y   2.114 I   1.835 J   0.125 F20
 G2 X   6.460 Y   2.155 I   0.273 J  -0.000 F20
 G2 X   6.508 Y   2.335 I   0.819 J  -0.125 F20
@@ -39,7 +39,7 @@ G2 X   6.501 Y   2.000 I  -0.284 J   0.837 F20
 G2 X   6.461 Y   1.989 I  -0.304 J   1.005 F20
 M2
 G0 X   5.500 Y   3.475
-M1 S6000
+M1 S20
 G2 X   5.493 Y   3.486 I   1.986 J   1.240 F20
 G2 X   5.411 Y   3.641 I   1.190 J   0.734 F20
 G2 X   5.398 Y   3.675 I   0.267 J   0.122 F20
@@ -64,7 +64,7 @@ G2 X   5.511 Y   3.457 I  -2.858 J   2.248 F20
 G2 X   5.500 Y   3.475 I   1.066 J   0.690 F20
 M2
 G0 X   5.444 Y   4.941
-M1 S6000
+M1 S20
 G2 X   5.497 Y   5.021 I   0.367 J  -0.186 F20
 G2 X   5.515 Y   5.036 I   0.052 J  -0.044 F20
 G3 X   5.540 Y   5.039 I  -0.013 J   0.237 F20
@@ -84,7 +84,7 @@ G3 X   5.470 Y   4.954 I   0.502 J  -1.095 F20
 G2 X   5.444 Y   4.941 I  -0.507 J   0.971 F20
 M2
 G0 X   9.001 Y   5.775
-M1 S6000
+M1 S20
 G2 X   9.017 Y   5.830 I   0.220 J  -0.036 F20
 G2 X   9.029 Y   5.840 I   0.016 J  -0.007 F20
 G2 X   9.081 Y   5.843 I   0.034 J  -0.127 F20

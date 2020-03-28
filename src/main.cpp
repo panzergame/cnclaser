@@ -39,7 +39,7 @@ void welcome()
 	static const char buf[512] PROGMEM =
 R"(Welcome to cnclaser
 Commands:
-M1 - Laser on
+M1 S (int) - Laser on
 M2 - Laser off
 G0 X (float) Y (float) - Fast move
 G1 X (float) Y (float) F (int) - Linear move
@@ -78,8 +78,13 @@ float feedRateToSpeed(int feed)
 	return float(feed) / 60.f;
 }
 
+// #define DEBUG
+
 void loop()
 {
+#ifdef DEBUG
+	laser.Enable(60);
+#else
 	const Parser::Command cmd = parser.NextCommand();
 
 	// TODO mediator
@@ -106,7 +111,7 @@ void loop()
 		}
 		case Parser::Command::LASER_ON:
 		{
-			rasterizer.EnableLaser();
+			rasterizer.EnableLaser(cmd.intensity);
 			break;
 		}
 		case Parser::Command::LASER_OFF:
@@ -119,6 +124,7 @@ void loop()
 			break;
 		}
 	}
+#endif
 }
 
 int main()

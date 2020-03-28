@@ -12,6 +12,8 @@ namespace Config
 	static constexpr uint8_t LINE_QUEUE_SIZE = 32;
 	/// Speed when laser is off.
 	static constexpr float LASER_OFF_SPEED = 1.0;
+	/// Laser power off.
+	static constexpr uint8_t LASER_OFF_INTENSITY = 0;
 	/// Maximum command line size.
 	static constexpr uint8_t CMD_LINE_SIZE = 48;
 	/// Command queue length.

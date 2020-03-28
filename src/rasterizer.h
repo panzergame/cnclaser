@@ -93,7 +93,7 @@ public:
 	void AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS], ArcDir dir, float speed);
 
 	/// Enable laser for next lines.
-	void EnableLaser();
+	void EnableLaser(uint8_t intensity);
 	/// Disable laser for next lines.
 	void DisableLaser();
 };

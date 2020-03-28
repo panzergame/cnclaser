@@ -26,6 +26,8 @@ public:
 		float rel[2];
 		/// Feed rate.
 		uint8_t feed;
+		/// Intensity
+		uint8_t intensity;
 	};
 
 private:
