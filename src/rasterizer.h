@@ -16,8 +16,8 @@ public:
 
 	enum ArcDir
 	{
-		ARC_CW = 1,
-		ARC_CCW = -1
+		ARC_CW,
+		ARC_CCW
 	};
 
 private:

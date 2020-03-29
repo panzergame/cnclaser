@@ -13,7 +13,7 @@ static float atan3(float dy,float dx)
 {
 	float a = atan2(dy, dx);
 	if (a < 0.0) {
-		a = (M_PI * 2.0) + a;
+		a += M_PI * 2.0;
 	}
 	return a;
 }
@@ -122,6 +122,14 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 		return;
 	}
 
+	// Check boundaries
+	FOREACH_AXIS {
+		if (BOUNDARIES[i][0] > pos[i] || pos[i] > BOUNDARIES[i][1]) {
+			// If out of boundaries on one axis, exit
+			return;
+		}
+	}
+
 	// Attendre si le buffer est plein.
 	while (m_lines.Full());
 
@@ -204,10 +212,12 @@ void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS],
 	// Arc angle.
 	float theta = angle2 - angle1;
 
-	if (dir > 0 && theta < 0.0) {
+	// CW arc theta must be positive
+	if (dir == ARC_CCW && theta < 0.0) {
 		angle2 += 2.0 * M_PI;
 	}
-	else if (dir < 0 && theta > 0.0) {
+	// CW arc theta must be negative
+	else if (dir == ARC_CW && theta > 0.0) {
 		angle1 += 2.0 * M_PI;
 	}
 

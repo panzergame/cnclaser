@@ -22,4 +22,10 @@ namespace Config
 	static constexpr uint8_t USART_TX_QUEUE_SIZE = 16;
 	/// Stepper timer prescaler.
 	static constexpr uint16_t TIMER_PRESCALER = 1024;
+
+	// Plate boundaries X, Y (min, max)
+	static constexpr float BOUNDARIES[2][2] = {
+		{0.0f, 70.0f},
+		{0.0f, 70.0f}
+	};
 }
