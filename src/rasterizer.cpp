@@ -99,6 +99,14 @@ Rasterizer::Rasterizer(Stepper *steppers[NUM_AXIS], Laser *laser, float ticPerio
 
 void Rasterizer::AddLine(const float pos[NUM_AXIS], float speed)
 {
+	// Check boundaries
+	FOREACH_AXIS {
+		if (Config::BOUNDARIES[i][0] > pos[i] || pos[i] > Config::BOUNDARIES[i][1]) {
+			// If out of boundaries on one axis, exit
+			return;
+		}
+	}
+
 	uint16_t ipos[NUM_AXIS];
 	FOREACH_AXIS {
 		ipos[i] = (uint16_t)(pos[i] / Config::STEP_MM);
@@ -120,14 +128,6 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 
 	if (equal) {
 		return;
-	}
-
-	// Check boundaries
-	FOREACH_AXIS {
-		if (BOUNDARIES[i][0] > pos[i] || pos[i] > BOUNDARIES[i][1]) {
-			// If out of boundaries on one axis, exit
-			return;
-		}
 	}
 
 	// Attendre si le buffer est plein.
