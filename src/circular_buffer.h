@@ -72,13 +72,10 @@ public:
 	 */
 	bool Add(const Data *datas)
 	{
-		uint8_t i = 0;
-		while (datas[i]) {
-			if (!Add(datas[i])) {
+		for (Data *data = datas; *data; ++data) {
+			if (!Add(data)) {
 				return false;
 			}
-
-			++i;
 		}
 
 		return true;

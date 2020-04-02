@@ -117,21 +117,23 @@ Parser::Parser()
 
 void Parser::Received(uint8_t data)
 {
-	if (!m_buffers.Full()) {
-		m_buffer.data[m_bufferLen++] = data;
+	m_buffer.data[m_bufferLen++] = data;
 
-		// Ligne complète reçu.
-		if (data == '\n') {
-			m_buffer.data[m_bufferLen] = '\0';
-			m_bufferLen = 0;
+	// Ligne complète reçu.
+	if (data == '\n') {
+		m_buffer.data[m_bufferLen] = '\0';
+		m_bufferLen = 0;
 
-			m_buffers.Add(m_buffer);
-			// Aucun envoie d'un ack si la file est pleine avec ce nouveau buffer.
-			m_buffer.ack = !m_buffers.Full();
-			if (m_buffer.ack) {
-				SendAck();
-			}
+		// Aucun envoie d'un ack si la file ne peut pas acceuillir un autre buffer
+		m_buffer.ack = (m_buffers.Len() < (m_buffers.Size - 1));
+
+		if (m_buffer.ack) {
+			// Demande du prochain buffer
+			SendAck();
 		}
+
+		// Copie et ajout
+		m_buffers.Add(m_buffer);
 	}
 }
 
@@ -146,9 +148,9 @@ Parser::Command Parser::NextCommand()
 		}
 	} while (!buffer);
 
-	// Envoie du ack si le buffer était plein.
+	// Envoie du ack pour le buffer si il n'a pas déjà été fait.
 	if (!buffer->ack) {
-		buffer->ack = true;
+		// Demande du prochain buffer
 		SendAck();
 	}
 
