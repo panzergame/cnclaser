@@ -2,6 +2,7 @@
 #include "usart.h"
 
 #include <util/delay.h>
+#include <util/atomic.h>
 #include <avr/pgmspace.h>
 #include <stdio.h>
 
@@ -124,13 +125,12 @@ void Parser::Received(uint8_t data)
 			m_buffer.data[m_bufferLen] = '\0';
 			m_bufferLen = 0;
 
-			// Aucun envoie d'un ack si le buffer va être plein avec ce nouveau buffer.
-			m_buffer.ack = (m_buffers.Len() < (m_buffers.Size - 1));
+			m_buffers.Add(m_buffer);
+			// Aucun envoie d'un ack si la file est pleine avec ce nouveau buffer.
+			m_buffer.ack = !m_buffers.Full();
 			if (m_buffer.ack) {
 				SendAck();
 			}
-
-			m_buffers.Add(m_buffer);
 		}
 	}
 }
@@ -140,7 +140,10 @@ Parser::Command Parser::NextCommand()
 	Buffer *buffer;
 	// Attendre jusqu'à avoir un buffer.
 	do {
-		buffer = m_buffers.RemoveBegin();
+		// Protecting from interrupt poping a buffer.
+		ATOMIC_BLOCK(ATOMIC_FORCEON) {
+			buffer = m_buffers.RemoveBegin();
+		}
 	} while (!buffer);
 
 	// Envoie du ack si le buffer était plein.

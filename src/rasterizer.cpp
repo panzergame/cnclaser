@@ -5,6 +5,7 @@
 #include "laser.h"
 
 #include <util/delay.h>
+#include <util/atomic.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -131,7 +132,13 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 	}
 
 	// Attendre si le buffer est plein.
-	while (m_lines.Full());
+	bool full;
+	do {
+		// Protecting from interrupt poping elements
+		ATOMIC_BLOCK(ATOMIC_FORCEON) {
+			full = m_lines.Full();
+		}
+	} while (full);
 
 	Line line;
 	line.elapsed = 0;
@@ -184,7 +191,10 @@ void Rasterizer::AddLine(const uint16_t pos[NUM_AXIS], float speed)
 		axis.over = line.steps / 2;
 	}
 
-	m_lines.Add(line);
+	// Protecting from interrupt poping elements
+	ATOMIC_BLOCK(ATOMIC_FORCEON) {
+		m_lines.Add(line);
+	}
 }
 
 void Rasterizer::AddCircle(const float pos[NUM_AXIS], const float rel[NUM_AXIS], ArcDir dir, float speed)
